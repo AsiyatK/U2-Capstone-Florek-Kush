@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  title: LevelUp! Web Service
+
+  description: A simple web service with CRUD functionality for managing LevelUp! membership and points tracking.
+  version: 0.0.1
+servers:
+  - url: 'http://localhost:7001'
+    description: Local dev server
+paths:
+  /level-up:
+    post:
+      summary: Creates a new member account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LevelUpViewModel'
+      responses:
+        '201':
+          description: A LevelUpViewModel object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevelUpViewModel'
+        '400':
+          description: Invalid request syntax.
+        '422':
+          description: List of 1 or more errors if required fields are missing or violate JSR 303 validation.
+    get:
+      summary: Retrieves all accounts
+      responses:
+        '200':
+          description: LevelUp memebership list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LevelUpViewModel'
+        '404':
+          description: Request not found.
+  /level-up/{id}:
+    # GET, DELETE, and PUT are all under this path entry
+    get:
+      summary: Retrieves the account information by id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the account you would like to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: LevelUpViewModel object matching given id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevelUpViewModel'
+        '404':
+          description: Request not found.
+
+    put:
+      summary: Updates an existing account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the account you would like to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LevelUpViewModel'
+      responses:
+        '201':
+          description: Updated
+        '400':
+          description: Invalid request syntax.
+        '422':
+          description: Incomplete console information. One or more required fields missing.
+
+    delete:
+      summary: Deletes an account based on the id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Id of the account you would like to delete.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Account successfully deleted.
+
+  /level-up/customer/{customerId}:
+    get:
+      summary: Retrieve account by customer.
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Customer id of account you would like to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: LevelUpViewModel object matching given customerId.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevelUpViewModel'
+
+components:
+  schemas:
+    LevelUpViewModel:
+      type: object
+      properties:
+        levelUpId:
+          type: integer
+        customerId:
+          type: integer
+        points:
+          type: integer
+        memberDate:
+          type: string
+          format: date
+      required:
+        - customerId
+        - points
+        - memberDate
