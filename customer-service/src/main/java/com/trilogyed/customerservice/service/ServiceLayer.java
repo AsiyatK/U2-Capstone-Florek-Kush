@@ -5,13 +5,13 @@ import com.trilogyed.customerservice.dao.CustomerDao;
 import com.trilogyed.customerservice.model.Customer;
 import com.trilogyed.customerservice.model.CustomerViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
 public class ServiceLayer {
     private CustomerDao dao;
 
