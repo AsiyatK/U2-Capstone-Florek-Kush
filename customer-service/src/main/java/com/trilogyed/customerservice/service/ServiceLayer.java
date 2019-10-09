@@ -45,10 +45,12 @@ public class ServiceLayer {
         return cvms;
     }
 
+    @Transactional
     public void updateCustomer (Customer customer){
         dao.updateCustomer(customer);
     }
 
+    @Transactional
     public void removeCustomer(int customerId){
         dao.deleteCustomer(customerId);
     }
