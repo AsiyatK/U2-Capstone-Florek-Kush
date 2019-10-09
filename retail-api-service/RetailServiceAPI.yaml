@@ -1,0 +1,213 @@
+openapi: 3.0.0
+info:
+  title: LevelUp! Web Service
+
+  description:     Web service that allows customers to browse products and make purchases. Calculates total costs and updates rewards points with each purchase.
+  version: 0.0.1
+servers:
+  - url: 'http://localhost:8181'
+    description: Local dev server
+paths:
+  /retail/products:
+    get:
+      summary: Retrieves all products
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductViewModel'
+        '404':
+          description: Request not found.
+
+  /retail/products/{productId}:
+    get:
+      summary: Retrieves the product information by id.
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: id of the product you would like to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ProductViewModel object matching given id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductViewModel'
+        '404':
+          description: Request not found.
+          
+  /retail/products/inventory:
+    get:
+      summary: Retrieve all products in inventory.
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductViewModel'
+
+  /retail/products/invoice/{invoiceId}:
+    get:
+      summary: Retrieve all products by invoice.
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          description: id of the invoice you would like to retrieve products for.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductViewModel'
+
+  /retail/invoices:
+    post:
+      summary: Creates a new invoice.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderViewModel'
+      responses:
+        '201':
+          description: An InvoiceViewModel object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceViewModel'
+        '400':
+          description: Invalid request syntax.
+        '422':
+          description: List of 1 or more errors if required fields are missing or violate JSR 303 validation.
+
+  /retail/invoices/{id}:
+    get:
+      summary: Retrieves the invoice information by id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the invoice you would like to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: InvoiceViewModel object matching given id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceViewModel'
+        '404':
+          description: Request not found.
+
+  /retail/invoices/customer/{customerId}:
+    get:
+      summary: Retrieve all invoices by customer.
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: id of the customer you would like to retrieve invoices for.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Invoice list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvoiceViewModel'
+  /retail/level-up/{id}:
+    get:
+      summary: Retrieves the account information by id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the account you would like to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: LevelUpViewModel object matching given id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevelUpViewModel'
+        '404':
+          description: Request not found.
+
+    put:
+      summary: Updates an existing account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the account you would like to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LevelUpViewModel'
+      responses:
+        '201':
+          description: Updated
+        '400':
+          description: Invalid request syntax.
+        '422':
+          description: Incomplete console information. One or more required fields missing.
+
+components:
+  schemas:
+    ProductViewModel:
+      type: object
+      properties:
+        productId:
+          type: integer
+      required: 
+        -
+
+    InvoiceViewModel:
+      type: object
+      properties:
+        invoiceId:
+          type: integer
+      required:
+        -
+
+    LevelUpViewModel:
+      type: object
+      properties:
+        levelUpId:
+          type: integer
+        customerId:
+          type: integer
+        points:
+          type: integer
+        memberDate:
+      required:
+        - customerId
+        - points
+        - memberDate
