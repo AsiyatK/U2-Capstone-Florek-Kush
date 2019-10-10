@@ -115,6 +115,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LevelUpViewModel'
+    delete:
+      summary: Deletes an account based on the customerId
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Id of the customer for the account you would like to delete.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Account successfully deleted.
 
 components:
   schemas:
