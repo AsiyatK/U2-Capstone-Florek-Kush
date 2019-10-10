@@ -1,0 +1,130 @@
+openapi: 3.0.0
+info:
+  title: Product Service
+  description: REST service that allows for CRUD operations for a product service.
+  version: 0.0.1
+servers: 
+  - url: 'http://localhost:8282'
+    description: Local dev server
+paths:
+  /products:
+    post:
+      summary: Creates a new Product with provided information.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: A Customer object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid request syntax.
+        '422':
+          description: Incomplete Product information. Some required fields missing.
+    get:
+      summary: Retrieves list of products.
+      responses:
+        '200':
+          description: An array of Product objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'    
+  /products/{id}:
+    get:
+      summary: Retrieves a Product with the given ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the Product to be retrieved.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Product object matching given ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '422':
+          description: Product with given Id could not be found.
+    delete:
+      summary: Deletes Product with the given ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the product to be deleted.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Product successfully deleted.
+        '422':
+          description: Product with given Id could not be found.
+    put:
+      summary: Updates the Product with the given ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the product to be updated.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product successfully updated.
+        '422':
+          description: Product ID on path must match the ID in the Product object.
+    
+    
+      
+components:
+  schemas:
+    Product:
+      properties:
+        productId:
+          type: integer
+        productName:
+          type: string
+        productDescription:
+          type: string
+        listPrice:
+          type: integer
+        unitCost:
+          type: integer
+      required: 
+        - productName
+        - productDescription
+        - listPrice
+        - unitCost
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
