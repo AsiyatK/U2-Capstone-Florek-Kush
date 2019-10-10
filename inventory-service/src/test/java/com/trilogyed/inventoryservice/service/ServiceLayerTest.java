@@ -83,7 +83,7 @@ public class ServiceLayerTest {
     }
 
     @Test
-    public void updateDeleteAccount(){
+    public void updateInventory(){
         LevelUpViewModel accountUpdate = new LevelUpViewModel();
         accountUpdate.setLevelUpId(908);
         accountUpdate.setCustomerId(908);
@@ -101,7 +101,19 @@ public class ServiceLayerTest {
     }
 
     @Test(expected = MembershipNotFoundException.class)
-    public void deleteAccount(){
+    public void deleteInventory(){
+        LevelUpViewModel accountDelete = new LevelUpViewModel();
+        accountDelete.setLevelUpId(973);
+
+        sl.deleteAccount(accountDelete.getLevelUpId());
+
+        accountDelete = sl.getAccount(accountDelete.getLevelUpId());
+
+        fail("Should throw an error because account does not exist");
+    }
+
+    @Test(expected = MembershipNotFoundException.class)
+    public void deleteInventoryByProduct(){
         LevelUpViewModel accountDelete = new LevelUpViewModel();
         accountDelete.setLevelUpId(973);
 
@@ -157,6 +169,8 @@ public class ServiceLayerTest {
         //mock response for deleting inventory
         doNothing().when(inventoryDao).deleteInventory(973);
         doReturn(null).when(inventoryDao).getInventory(973);
+        doReturn(null).when(inventoryDao).getInventoriesByProduct(973);
+
 
     }
 }
