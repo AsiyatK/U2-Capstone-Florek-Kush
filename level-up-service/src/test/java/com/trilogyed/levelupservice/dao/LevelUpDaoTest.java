@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -87,6 +88,24 @@ public class LevelUpDaoTest {
 
         assertEquals(account, accountFromDb);
 
+    }
+
+    @Test
+    public void deleteByCustomer(){
+        //assemble
+        LevelUp account = new LevelUp();
+        account.setCustomerId(732);
+        account.setPoints(5000);
+        account.setMemberDate(LocalDate.of(2010, 8, 2));
+
+        levelUpDao.createNewAccount(account);
+
+        //act (delete by...)
+        levelUpDao.deleteAccountByCustomer(account.getCustomerId());
+
+        account = levelUpDao.getAccountByCustomer(account.getCustomerId());
+
+        assertNull(account);
     }
 
     @Test

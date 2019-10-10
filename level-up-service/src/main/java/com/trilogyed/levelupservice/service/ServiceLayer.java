@@ -68,12 +68,18 @@ public class ServiceLayer {
 
     public LevelUpViewModel getAccountByCustomer(int customerId){
 
-        LevelUpViewModel account = buildLevelUpViewModel(dao.getAccountByCustomer(customerId));
+        LevelUp l = dao.getAccountByCustomer(customerId);
 
-        if(account != null){
-            return account;
-        } else {
-            throw new MembershipNotFoundException("The account with customerId " + customerId + " could not be located");
+        if(l==null){
+            throw new MembershipNotFoundException();
+        } else{
+            LevelUpViewModel account = buildLevelUpViewModel(l);
+
+            if(account != null){
+                return account;
+            } else {
+                throw new MembershipNotFoundException("The account with customerId " + customerId + " could not be located");
+            }
         }
 
     }
@@ -87,6 +93,12 @@ public class ServiceLayer {
     public void deleteAccount(int levelUpId){
 
         dao.deleteAccount(levelUpId);
+
+    }
+
+    public void deleteAccountByCustomer(int customerId){
+
+        dao.deleteAccountByCustomer(customerId);
 
     }
 
