@@ -1,0 +1,142 @@
+openapi: 3.0.0
+info:
+  title: Customer Service
+  description: REST service that allows for CRUD operations for Customer service.
+  version: 0.0.1
+servers: 
+  - url: 'http://localhost:8282'
+    description: Local dev server
+paths:
+  /customers:
+    post:
+      summary: Creates a new customer with provided information.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: A Customer object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Invalid request syntax.
+        '422':
+          description: Incomplete Customer information. Some required fields missing.
+    get:
+      summary: Retrieves list of customers.
+      responses:
+        '200':
+          description: An array of Customer objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+  /customers/{id}:
+    get:
+      summary: Retrieves a Customer with the given ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the Customer to be retrieved.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Customer object matching given ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '422':
+          description: Customer with given Id could not be found.
+    delete:
+      summary: Deletes Customer with the given ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the customer to be deleted.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Customer successfully deleted.
+        '422':
+          description: Customer with given Id could not be found.
+    put:
+      summary: Updates the Customer with the given ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the customer to be updated.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Customer successfully updated.
+        '422':
+          description: Customer ID on path must match the ID in the Customer object.
+    
+  
+components:
+  schemas:
+    Customer:
+      properties:
+        customerId:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        zip:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+      required: 
+        - firstName
+        - lastName
+        - street
+        - city
+        - zip
+        - email
+        - phone
+        
+        
+    
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
