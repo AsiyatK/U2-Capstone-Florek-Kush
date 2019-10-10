@@ -78,13 +78,13 @@ public class LevelUpDaoTest {
 
         //set new instance equal to db version
         LevelUp accountFromDb = levelUpDao.getAccount(account.getLevelUpId());
-        //test that initial console added to db is not same as local memory
+
         assertNotEquals(account, accountFromDb);
-        //update console in db
+
         levelUpDao.updateAccount(account);
-        //set c1 equal to updated console from db
+
         accountFromDb = levelUpDao.getAccount(account.getLevelUpId());
-        //test that updated console from db and console in local are now equal
+
         assertEquals(account, accountFromDb);
 
     }
