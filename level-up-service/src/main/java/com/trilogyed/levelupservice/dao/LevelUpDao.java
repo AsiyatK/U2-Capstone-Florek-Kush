@@ -6,15 +6,15 @@ import java.util.List;
 
 public interface LevelUpDao {
 
-    public LevelUp createNewAccount(LevelUp newAccount);
+    LevelUp createNewAccount(LevelUp newAccount);
 
-    public LevelUp getAccount(int levelUpId);
+    LevelUp getAccount(int levelUpId);
 
-    public LevelUp getAccountByCustomer(int customerId);
+    LevelUp getAccountByCustomer(int customerId);
 
-    public List<LevelUp> getAllAccounts();
+    List<LevelUp> getAllAccounts();
 
-    public void updateAccount(LevelUp updatedAccount);
+    void updateAccount(LevelUp updatedAccount);
 
-    public void deleteAccount(int levelUpId);
+    void deleteAccount(int levelUpId);
 }
