@@ -126,28 +126,28 @@ public class InvoiceItemDaoTest {
         invoice.setPurchaseDate(LocalDate.of(2019, 8, 2));
 
         invoice = invoiceDao.addInvoice(invoice);
-
+        //assemble
         InvoiceItem item = new InvoiceItem();
         item.setInvoiceId(invoice.getInvoiceId());
         item.setInventoryId(732);
         item.setQuantity(10);
         item.setUnitPrice(new BigDecimal("19.99"));
-
+        //add to db
         item = invoiceItemDao.addInvoiceItem(item);
-
+        //add to list
         List<InvoiceItem> itemList = new ArrayList<>();
         itemList.add(item);
-
+        //get list from db
         List<InvoiceItem> itemsByInvoice = invoiceItemDao.getInvoiceItemsByInvoice(item.getInvoiceId());
-
+        //assert lists match/list from db size is as expected
         assertEquals(itemList, itemsByInvoice);
         assertEquals(1, itemsByInvoice.size());
 
-        //delete
+        //act (delete by...)
         invoiceItemDao.deleteInvoiceItemsByInvoice(item.getInvoiceId());
-
+        //get list from db again
         itemsByInvoice = invoiceItemDao.getInvoiceItemsByInvoice(item.getInvoiceId());
-
+        //assert list is now zero
         assertEquals(0, itemsByInvoice.size());
     }
 

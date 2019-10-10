@@ -31,6 +31,8 @@ public class LevelUpDaoJdbcTemplateImpl implements LevelUpDao {
             "update level_up set customer_id=?, points=?, member_date=? where level_up_id = ?";
     private final static String DELETE_ACCOUNT =
             "delete from level_up where level_up_id=?";
+    private final static String DELETE_ACCOUNT_BY_CUSTOMER =
+            "delete from level_up where customer_id=?";
 
     //db row to object mapper
     private LevelUp mapRowToLevelUp (ResultSet rs, int rowNum) throws SQLException {
@@ -99,6 +101,13 @@ public class LevelUpDaoJdbcTemplateImpl implements LevelUpDao {
     public void deleteAccount(int levelUpId) {
 
         jdbcTemplate.update(DELETE_ACCOUNT, levelUpId);
+
+    }
+
+    @Override
+    public void deleteAccountByCustomer(int customerId){
+
+        jdbcTemplate.update(DELETE_ACCOUNT_BY_CUSTOMER, customerId);
 
     }
 }

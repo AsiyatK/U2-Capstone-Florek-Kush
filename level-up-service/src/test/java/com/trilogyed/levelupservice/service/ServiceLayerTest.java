@@ -86,7 +86,7 @@ public class ServiceLayerTest {
     }
 
     @Test
-    public void updateDeleteAccount(){
+    public void updateAccount(){
         LevelUpViewModel accountUpdate = new LevelUpViewModel();
         accountUpdate.setLevelUpId(908);
         accountUpdate.setCustomerId(908);
@@ -111,6 +111,18 @@ public class ServiceLayerTest {
         sl.deleteAccount(accountDelete.getLevelUpId());
 
         accountDelete = sl.getAccount(accountDelete.getLevelUpId());
+
+        fail("Should throw an error because account does not exist");
+    }
+
+    @Test(expected = MembershipNotFoundException.class)
+    public void deleteAccountByCustomer(){
+        LevelUpViewModel accountDelete = new LevelUpViewModel();
+        accountDelete.setCustomerId(973);
+
+        sl.deleteAccountByCustomer(accountDelete.getCustomerId());
+
+        accountDelete = sl.getAccountByCustomer(accountDelete.getCustomerId());
 
         fail("Should throw an error because account does not exist");
     }
@@ -145,7 +157,7 @@ public class ServiceLayerTest {
         accountDeleted.setPoints(3000);
         accountDeleted.setMemberDate(LocalDate.of(2019, 6, 25));
 
-        //mock setUp for get all consoles
+        //mock setUp for get all accounts
         List<LevelUp> allAccounts = new ArrayList<>();
         allAccounts.add(accountAdded);
         allAccounts.add(accountUpdated);
@@ -161,10 +173,7 @@ public class ServiceLayerTest {
         //mock response for deleting account
         doNothing().when(levelUpDao).deleteAccount(973);
         doReturn(null).when(levelUpDao).getAccount(973);
-
-        //mock response for getting by customer that does not exist
-        doReturn(null).when(levelUpDao).getAccountByCustomer(291);
-
+        doReturn(null).when(levelUpDao).getAccountByCustomer(973);
     }
 
 }
