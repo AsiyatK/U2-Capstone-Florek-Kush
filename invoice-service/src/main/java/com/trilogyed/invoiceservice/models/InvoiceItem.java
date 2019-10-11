@@ -15,11 +15,11 @@ public class InvoiceItem {
     @NotBlank(message = "inventoryId is a required field")
     @Positive(message = "inventoryId must be a valid/positive number")
     private int inventoryId;
-    @PositiveOrZero(message = "invoiceId must be zero or greater")
+    @PositiveOrZero(message = "quantity must be zero or greater")
     @NotBlank(message = "quantity is a required field")
     private int quantity;
     @NotBlank(message = "unitPrice is a required field")
-    @Positive(message = "inventoryId must be a valid/positive decimal value")
+    @Positive(message = "unitPrice must be a valid/positive decimal value")
     private BigDecimal unitPrice;
 
     public int getInvoiceItemId() {

@@ -1,20 +1,19 @@
 package com.trilogyed.invoiceservice.viewmodels;
 
 import com.trilogyed.invoiceservice.models.Invoice;
-import com.trilogyed.invoiceservice.models.InvoiceItem;
 
 import java.util.List;
 import java.util.Objects;
 
 public class InvoiceViewModel extends Invoice {
 
-    private List<InvoiceItem> invoiceItems;
+    private List<InvoiceItemViewModel> invoiceItems;
 
-    public List<InvoiceItem> getInvoiceItems() {
+    public List<InvoiceItemViewModel> getInvoiceItems() {
         return invoiceItems;
     }
 
-    public void setInvoiceItems(List<InvoiceItem> invoiceItems) {
+    public void setInvoiceItems(List<InvoiceItemViewModel> invoiceItems) {
         this.invoiceItems = invoiceItems;
     }
 
