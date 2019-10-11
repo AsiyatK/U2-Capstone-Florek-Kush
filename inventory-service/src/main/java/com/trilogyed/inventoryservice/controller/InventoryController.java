@@ -58,7 +58,7 @@ public class InventoryController {
 
     @DeleteMapping(value = "/product/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteByCustomer(@PathVariable("id") int productId){
+    public void deleteByProduct(@PathVariable("id") int productId){
         sl.deleteInventoriesByProduct(productId);
     }
 }
