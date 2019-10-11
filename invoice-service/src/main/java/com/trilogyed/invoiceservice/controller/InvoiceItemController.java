@@ -32,17 +32,17 @@ public class InvoiceItemController {
         return item;
     }
 
-    @GetMapping(value = "/invoice/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<InvoiceItemViewModel> getInvoiceItemsByInvoice(@PathVariable("id") int invoiceId) {
-        return sl.getInvoiceItemsByInvoice(invoiceId);
-    }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<InvoiceItemViewModel> getAllInvoiceItems(){
-        return sl.getAllInvoiceItems();
-    }
+//    @GetMapping(value = "/invoice/{id}")
+//    @ResponseStatus(HttpStatus.OK)
+//    public List<InvoiceItemViewModel> getInvoiceItemsByInvoice(@PathVariable("id") int invoiceId) {
+//        return sl.getInvoiceItemsByInvoice(invoiceId);
+//    }
+//
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public List<InvoiceItemViewModel> getAllInvoiceItems(){
+//        return sl.getAllInvoiceItems();
+//    }
 
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

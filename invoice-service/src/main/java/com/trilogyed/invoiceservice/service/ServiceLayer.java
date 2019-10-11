@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceLayer {
@@ -58,13 +59,34 @@ public class ServiceLayer {
 
         List<Invoice> invoiceList = invoiceDao.getAllInvoices();
 
+        List<InvoiceItem> itemList = itemDao.getAllInvoiceItems();
+
         List<InvoiceViewModel> invoiceModels = new ArrayList<>();
 
-        invoiceList.stream()
-                .forEach(invoice -> {
-                    InvoiceViewModel model = buildInvoiceViewModel(invoice);
-                    invoiceModels.add(model);
-                });
+        for (int i = 0; i < invoiceList.size(); i++) {
+
+            int id =invoiceList.get(i).getInvoiceId();
+
+            List<InvoiceItem> itemsByInvoice =
+            itemList.stream()
+                    .filter(item -> item.getInvoiceId() == id)
+                    .collect(Collectors.toList());
+
+            InvoiceViewModel model = buildInvoiceViewModel(invoiceList.get(i), itemsByInvoice);
+
+            invoiceModels.add(model);
+        }
+
+//        List<Invoice> invoiceList = invoiceDao.getAllInvoices();
+//
+//        List<InvoiceViewModel> invoiceModels = new ArrayList<>();
+//
+//
+//        invoiceList.stream()
+//                .forEach(invoice -> {
+//                    InvoiceViewModel model = buildInvoiceViewModel(invoice);
+//                    invoiceModels.add(model);
+//                });
 
         return invoiceModels;
 
@@ -122,36 +144,36 @@ public class ServiceLayer {
         }
     }
 
-    public List<InvoiceItemViewModel> getAllInvoiceItems(){
-        List<InvoiceItem> itemList = itemDao.getAllInvoiceItems();
-
-        List<InvoiceItemViewModel> itemModels = new ArrayList<>();
-
-        itemList.stream()
-                .forEach(item -> {
-                    InvoiceItemViewModel model = buildInvoiceItemViewModel(item);
-                    itemModels.add(model);
-                });
-
-        return itemModels;
-
-    }
-    //possible unnecessary to have this method...
+//    public List<InvoiceItemViewModel> getAllInvoiceItems(){
+//        List<InvoiceItem> itemList = itemDao.getAllInvoiceItems();
+//
+//        List<InvoiceItemViewModel> itemModels = new ArrayList<>();
+//
+//        itemList.stream()
+//                .forEach(item -> {
+//                    InvoiceItemViewModel model = buildInvoiceItemViewModel(item);
+//                    itemModels.add(model);
+//                });
+//
+//        return itemModels;
+//
+//    }
+    //possibly unnecessary to have this method...
     //similar to deleteByInvoice, dao method getByInvoice could be called only within getInvoice methods as needed
-    public List<InvoiceItemViewModel> getInvoiceItemsByInvoice(int invoiceId){
-        List<InvoiceItem> itemList = itemDao.getInvoiceItemsByInvoice(invoiceId);
-
-        List<InvoiceItemViewModel> itemModels = new ArrayList<>();
-
-        itemList.stream()
-                .forEach(item -> {
-                    InvoiceItemViewModel model = buildInvoiceItemViewModel(item);
-                    itemModels.add(model);
-                });
-
-        return itemModels;
-
-    }
+//    public List<InvoiceItemViewModel> getInvoiceItemsByInvoice(int invoiceId){
+//        List<InvoiceItem> itemList = itemDao.getInvoiceItemsByInvoice(invoiceId);
+//
+//        List<InvoiceItemViewModel> itemModels = new ArrayList<>();
+//
+//        itemList.stream()
+//                .forEach(item -> {
+//                    InvoiceItemViewModel model = buildInvoiceItemViewModel(item);
+//                    itemModels.add(model);
+//                });
+//
+//        return itemModels;
+//
+//    }
 
     public void updateInvoiceItem(InvoiceItemViewModel updatedItem){
 
@@ -171,6 +193,19 @@ public class ServiceLayer {
         invoiceModel.setPurchaseDate(invoice.getPurchaseDate());
         //call getItemsByInvoice method then call buildItem method
         List<InvoiceItem> items = itemDao.getInvoiceItemsByInvoice(invoice.getInvoiceId());
+        invoiceModel.setInvoiceItems(buildInvoiceItemViewModel(items));
+
+        return invoiceModel;
+
+    }
+
+    private InvoiceViewModel buildInvoiceViewModel(Invoice invoice, List<InvoiceItem> items){
+        InvoiceViewModel invoiceModel = new InvoiceViewModel();
+        invoiceModel.setInvoiceId(invoice.getInvoiceId());
+        invoiceModel.setCustomerId(invoice.getCustomerId());
+        invoiceModel.setPurchaseDate(invoice.getPurchaseDate());
+        //call getItemsByInvoice method then call buildItem method
+        //List<InvoiceItem> items = itemDao.getInvoiceItemsByInvoice(invoice.getInvoiceId());
         invoiceModel.setInvoiceItems(buildInvoiceItemViewModel(items));
 
         return invoiceModel;
