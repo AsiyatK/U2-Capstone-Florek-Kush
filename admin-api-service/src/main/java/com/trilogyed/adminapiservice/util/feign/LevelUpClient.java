@@ -11,31 +11,31 @@ import java.util.List;
 @FeignClient(name = "level-up-service")
 public interface LevelUpClient {
 
-    @PostMapping
+    @RequestMapping(value = "/level-up", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     LevelUpViewModel createAccount(@RequestBody @Valid LevelUpViewModel account);
 
-    @GetMapping(value = "/{id}")
+    @RequestMapping(value = "level-up/{id}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     LevelUpViewModel getAccount(@PathVariable("id") int levelUpId);
 
-    @GetMapping(value = "/customer/{customerId}")
+    @GetMapping(value = "level-up/customer/{customerId}")
     @ResponseStatus(HttpStatus.OK)
     LevelUpViewModel getAccountByCustomer(@PathVariable("customerId") int customerId);
 
-    @GetMapping
+    @RequestMapping(value = "/level-up", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     List<LevelUpViewModel> getAllAccounts();
 
-    @PutMapping(value = "/{id}")
+    @RequestMapping(value = "level-up/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void updateAccount(@PathVariable("id") int levelUpId, @RequestBody @Valid LevelUpViewModel account);
 
-    @DeleteMapping(value = "/{id}")
+    @RequestMapping(value = "level-up/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteComment(@PathVariable("id") int levelUpId);
+    void deleteAccount(@PathVariable("id") int levelUpId);
 
-    @DeleteMapping(value = "/customer/{customerId}")
+    @RequestMapping(value = "level-up/customer/{customerId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteByPost(@PathVariable("customerId") int customerId);
+    void deleteByCustomer(@PathVariable("customerId") int customerId);
 }
