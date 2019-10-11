@@ -1,21 +1,23 @@
 package com.trilogyed.adminapiservice.service;
 
+import com.trilogyed.adminapiservice.exception.NotFoundException;
 import com.trilogyed.adminapiservice.model.Customer;
 import com.trilogyed.adminapiservice.model.Product;
 import com.trilogyed.adminapiservice.util.feign.CustomerClient;
 import com.trilogyed.adminapiservice.util.feign.LevelUpClient;
 import com.trilogyed.adminapiservice.util.feign.ProductClient;
 import com.trilogyed.adminapiservice.viewModel.CustomerViewModel;
+import com.trilogyed.adminapiservice.viewModel.LevelUpViewModel;
 import com.trilogyed.adminapiservice.viewModel.ProductViewModel;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class ServicelayerTest {
@@ -32,6 +34,7 @@ public class ServicelayerTest {
 
         setUpProductClientMock();
         setUpCustomerClientMock();
+        setUpLevelUpClientMock();
 
         service = new ServiceLayer(productClient, customerClient, levelUpClient);
 
@@ -74,11 +77,11 @@ public class ServicelayerTest {
         assertEquals(pvm, pvmUpdate);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void removeProduct(){
         service.removeProduct(3);
-       // assertNull(service.findProduct(3));
-        assertNull(productClient.getProduct(3));
+        assertNull(service.findProduct(3));
+
     }
 
 
@@ -102,7 +105,7 @@ public class ServicelayerTest {
 
         List<CustomerViewModel> customerViewModels = service.findAllCustomers();
         assertEquals(customerViewModels.size(), 1);
-      //  assertEquals(customerViewModels.get(0), cvmFromService);
+        assertEquals(customerViewModels.get(0), cvmFromService);
 
     }
 
@@ -127,14 +130,107 @@ public class ServicelayerTest {
 
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
+
+    //asserts that this will throw an illegal argument exception while trying to get an customer that does not exist.
     public void removeCustomer(){
         service.removeCustomer(3);
-        //assertNull(service.findCustomer(3));
-        assertNull(customerClient.getCustomer(3));
+        assertNull(service.findCustomer(3));
+
+
     }
 
+    @Test
+    public void createGetAccountGetAccountByCustomer(){
+        LevelUpViewModel accountToAdd = new LevelUpViewModel();
+        accountToAdd.setCustomerId(732);
+        accountToAdd.setPoints(5000);
+        accountToAdd.setMemberDate(LocalDate.of(2010, 8, 2));
 
+        accountToAdd = service.saveAccount(accountToAdd);
+
+        LevelUpViewModel accountCreated = service.findAcount(accountToAdd.getLevelUpId());
+
+        assertEquals(accountToAdd, accountCreated);
+
+        LevelUpViewModel accountByCustomer = service.findAccountByCustomer(accountToAdd.getCustomerId());
+
+        assertEquals(accountToAdd, accountByCustomer);
+    }
+
+    @Test
+    public void getAllAccounts(){
+        List<LevelUpViewModel> allAccounts = new ArrayList<>();
+
+        LevelUpViewModel account1 = new LevelUpViewModel();
+        account1.setLevelUpId(732);
+        account1.setCustomerId(732);
+        account1.setPoints(5000);
+        account1.setMemberDate(LocalDate.of(2010, 8, 2));
+
+        LevelUpViewModel account2 = new LevelUpViewModel();
+        account2.setLevelUpId(908);
+        account2.setCustomerId(908);
+        account2.setPoints(2000);
+        account2.setMemberDate(LocalDate.of(2012, 7, 19));
+
+        LevelUpViewModel account3 = new LevelUpViewModel();
+        account3.setLevelUpId(973);
+        account3.setCustomerId(973);
+        account3.setPoints(3000);
+        account3.setMemberDate(LocalDate.of(2019, 6, 25));
+
+        allAccounts.add(account1);
+        allAccounts.add(account2);
+        allAccounts.add(account3);
+
+        List<LevelUpViewModel> accountsFromService = service.findAllAccounts();
+
+        assertEquals(accountsFromService.size(), allAccounts.size());
+
+        assertEquals(allAccounts, accountsFromService);
+    }
+
+    @Test
+    public void updateAccount(){
+        LevelUpViewModel accountUpdate = new LevelUpViewModel();
+        accountUpdate.setLevelUpId(908);
+        accountUpdate.setCustomerId(908);
+        accountUpdate.setPoints(1000);
+        accountUpdate.setMemberDate(LocalDate.of(2012, 7, 19));
+
+        accountUpdate.setPoints(2000);
+
+        service.updateAccount(accountUpdate.getLevelUpId(), accountUpdate);
+
+        LevelUpViewModel accountFromService = service.findAcount(accountUpdate.getLevelUpId());
+
+        assertEquals(accountUpdate, accountFromService);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteAccount(){
+        LevelUpViewModel accountDelete = new LevelUpViewModel();
+        accountDelete.setLevelUpId(973);
+
+        service.deleteAccount(accountDelete.getLevelUpId());
+
+        accountDelete = service.findAcount(accountDelete.getLevelUpId());
+
+        fail("Should throw an error because account does not exist");
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteAccountByCustomer(){
+        LevelUpViewModel accountDelete = new LevelUpViewModel();
+        accountDelete.setCustomerId(973);
+
+        service.deleteByCustomer(accountDelete.getCustomerId());
+
+        accountDelete = service.findAccountByCustomer(accountDelete.getCustomerId());
+
+        fail("Should throw an error because account does not exist");
+    }
 
 
     public void setUpProductClientMock(){
@@ -265,7 +361,55 @@ public class ServicelayerTest {
 
 
     public void setUpLevelUpClientMock(){
+
         levelUpClient = mock(LevelUpClient.class);
+
+
+
+        LevelUpViewModel accountAdded = new LevelUpViewModel();
+        accountAdded.setLevelUpId(732);
+        accountAdded.setCustomerId(732);
+        accountAdded.setPoints(5000);
+        accountAdded.setMemberDate(LocalDate.of(2010, 8, 2));
+
+        LevelUpViewModel accountNew = new LevelUpViewModel();
+        accountNew.setCustomerId(732);
+        accountNew.setPoints(5000);
+        accountNew.setMemberDate(LocalDate.of(2010, 8, 2));
+
+        doReturn(accountAdded).when(levelUpClient).createAccount(accountNew);
+        doReturn(accountAdded).when(levelUpClient).getAccount(732);
+        doReturn(accountAdded).when(levelUpClient).getAccountByCustomer(732);
+
+        LevelUpViewModel accountUpdated = new LevelUpViewModel();
+        accountUpdated.setLevelUpId(908);
+        accountUpdated.setCustomerId(908);
+        accountUpdated.setPoints(2000);
+        accountUpdated.setMemberDate(LocalDate.of(2012, 7, 19));
+
+        LevelUpViewModel accountDeleted = new LevelUpViewModel();
+        accountDeleted.setLevelUpId(973);
+        accountDeleted.setCustomerId(973);
+        accountDeleted.setPoints(3000);
+        accountDeleted.setMemberDate(LocalDate.of(2019, 6, 25));
+
+        //mock setUp for get all accounts
+        List<LevelUpViewModel> allAccounts = new ArrayList<>();
+        allAccounts.add(accountAdded);
+        allAccounts.add(accountUpdated);
+        allAccounts.add(accountDeleted);
+
+        //mock response for getting all accounts
+        doReturn(allAccounts).when(levelUpClient).getAllAccounts();
+
+        //mock response for updating account
+        doNothing().when(levelUpClient).updateAccount(908, accountUpdated);
+        doReturn(accountUpdated).when(levelUpClient).getAccount(908);
+
+        //mock response for deleting account
+        doNothing().when(levelUpClient).deleteAccount(973);
+        doReturn(null).when(levelUpClient).getAccount(973);
+        doReturn(null).when(levelUpClient).getAccountByCustomer(973);
     }
 
 }

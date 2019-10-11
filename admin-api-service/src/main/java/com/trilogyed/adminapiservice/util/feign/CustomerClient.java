@@ -28,7 +28,7 @@ public interface CustomerClient {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void updateCustomer(@PathVariable("id") int id, @RequestBody @Valid Customer customer);
 
-    @RequestMapping(value = "/products/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/customers/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteCustomer(@PathVariable("id") int id);
 }
