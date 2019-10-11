@@ -53,8 +53,7 @@ public class ServiceLayer {
             }
         }
     }
-    //*************************TO DO*************************\\
-    //Should make only two calls (one to Invoice table and one to Item table, then use filtered list to get InvoiceItems
+
     public List<InvoiceViewModel> getAllInvoices(){
 
         List<Invoice> invoiceList = invoiceDao.getAllInvoices();
@@ -65,7 +64,7 @@ public class ServiceLayer {
 
         for (int i = 0; i < invoiceList.size(); i++) {
 
-            int id =invoiceList.get(i).getInvoiceId();
+            int id = invoiceList.get(i).getInvoiceId();
 
             List<InvoiceItem> itemsByInvoice =
             itemList.stream()
@@ -77,6 +76,8 @@ public class ServiceLayer {
             invoiceModels.add(model);
         }
 
+        return invoiceModels;
+
 //        List<Invoice> invoiceList = invoiceDao.getAllInvoices();
 //
 //        List<InvoiceViewModel> invoiceModels = new ArrayList<>();
@@ -87,8 +88,6 @@ public class ServiceLayer {
 //                    InvoiceViewModel model = buildInvoiceViewModel(invoice);
 //                    invoiceModels.add(model);
 //                });
-
-        return invoiceModels;
 
     }
 
@@ -143,7 +142,8 @@ public class ServiceLayer {
             }
         }
     }
-
+//************THE FOLLOWING TWO METHODS EXCLUDED AS STANDALONE METHODS*************\\
+    //*****THE CORRESPONDING DAO METHODS ARE UTILIZED IN GETALLINVOICES() AND GETINVOICE()*****\\
 //    public List<InvoiceItemViewModel> getAllInvoiceItems(){
 //        List<InvoiceItem> itemList = itemDao.getAllInvoiceItems();
 //
@@ -158,7 +158,7 @@ public class ServiceLayer {
 //        return itemModels;
 //
 //    }
-    //possibly unnecessary to have this method...
+
     //similar to deleteByInvoice, dao method getByInvoice could be called only within getInvoice methods as needed
 //    public List<InvoiceItemViewModel> getInvoiceItemsByInvoice(int invoiceId){
 //        List<InvoiceItem> itemList = itemDao.getInvoiceItemsByInvoice(invoiceId);
@@ -199,13 +199,13 @@ public class ServiceLayer {
 
     }
 
+    //TAKES IN AN INVOICE OBJECT AND A LIST OF INVOICE ITEMS
     private InvoiceViewModel buildInvoiceViewModel(Invoice invoice, List<InvoiceItem> items){
         InvoiceViewModel invoiceModel = new InvoiceViewModel();
         invoiceModel.setInvoiceId(invoice.getInvoiceId());
         invoiceModel.setCustomerId(invoice.getCustomerId());
         invoiceModel.setPurchaseDate(invoice.getPurchaseDate());
-        //call getItemsByInvoice method then call buildItem method
-        //List<InvoiceItem> items = itemDao.getInvoiceItemsByInvoice(invoice.getInvoiceId());
+
         invoiceModel.setInvoiceItems(buildInvoiceItemViewModel(items));
 
         return invoiceModel;

@@ -2,12 +2,13 @@ package com.trilogyed.invoiceservice.viewmodels;
 
 import com.trilogyed.invoiceservice.models.Invoice;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class InvoiceViewModel extends Invoice {
 
-    private List<InvoiceItemViewModel> invoiceItems;
+    private List<InvoiceItemViewModel> invoiceItems = new ArrayList<>();
 
     public List<InvoiceItemViewModel> getInvoiceItems() {
         return invoiceItems;
