@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d5fabd08-16f5-4548-b393-03e79316bb20" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../invoice-service/src/main/java/com/trilogyed/invoiceservice/service/ServiceLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../invoice-service/src/main/java/com/trilogyed/invoiceservice/service/ServiceLayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d5fabd08-16f5-4548-b393-03e79316bb20" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
