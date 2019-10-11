@@ -46,8 +46,6 @@ public class ServiceLayer {
             }
         }
 
-
-
     }
 
     public List<LevelUpViewModel> getAllAccounts(){

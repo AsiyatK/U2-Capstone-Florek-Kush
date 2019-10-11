@@ -1,74 +1,74 @@
 openapi: 3.0.0
 info:
-  title: LevelUp! Web Service
+  title: Inventory Web Service
 
-  description: A simple web service with CRUD functionality for managing LevelUp! membership and points tracking.
+  description: A simple web service with CRUD functionality for managing product inventory.
   version: 0.0.1
 servers:
-  - url: 'http://localhost:7001'
+  - url: 'http://localhost:7003'
     description: Local dev server
 paths:
-  /level-up:
+  /inventory:
     post:
-      summary: Creates a new member account.
+      summary: Creates a new product inventory.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LevelUpViewModel'
+              $ref: '#/components/schemas/InventoryViewModel'
       responses:
         '201':
-          description: A LevelUpViewModel object
+          description: An InventoryViewModel object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LevelUpViewModel'
+                $ref: '#/components/schemas/InventoryViewModel'
         '400':
           description: Invalid request syntax.
         '422':
           description: List of 1 or more errors if required fields are missing or violate JSR 303 validation.
     get:
-      summary: Retrieves all accounts
+      summary: Retrieves all inventories
       responses:
         '200':
-          description: LevelUp memebership list
+          description: Inventory list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LevelUpViewModel'
+                  $ref: '#/components/schemas/InventoryViewModel'
         '404':
           description: Request not found.
-  /level-up/{id}:
+  /inventory/{id}:
     # GET, DELETE, and PUT are all under this path entry
     get:
-      summary: Retrieves the account information by id.
+      summary: Retrieves the inventory information by id.
       parameters:
         - name: id
           in: path
           required: true
-          description: id of the account you would like to retrieve.
+          description: id of the inventory you would like to retrieve.
           schema:
             type: integer
       responses:
         '200':
-          description: LevelUpViewModel object matching given id.
+          description: InventoryViewModel object matching given id.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LevelUpViewModel'
+                $ref: '#/components/schemas/InventoryViewModel'
         '404':
           description: Request not found.
 
     put:
-      summary: Updates an existing account
+      summary: Updates an existing inventory
       parameters:
         - name: id
           in: path
           required: true
-          description: id of the account you would like to update.
+          description: id of the inventory you would like to update.
           schema:
             type: integer
       requestBody:
@@ -76,73 +76,71 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LevelUpViewModel'
+              $ref: '#/components/schemas/InventoryViewModel'
       responses:
         '201':
           description: Updated
         '400':
           description: Invalid request syntax.
         '422':
-          description: Incomplete membership information. One or more required fields missing.
+          description: Incomplete inventory information. One or more required fields missing.
 
     delete:
-      summary: Deletes an account based on the id
+      summary: Deletes an inventory based on the id
       parameters:
         - name: id
           in: path
           required: true
-          description: Id of the account you would like to delete.
+          description: Id of the inventory you would like to delete.
           schema:
             type: integer
       responses:
         '200':
-          description: Account successfully deleted.
+          description: Inventory successfully deleted.
 
-  /level-up/customer/{customerId}:
+  /inventory/product/{id}:
     get:
-      summary: Retrieve account by customer.
+      summary: Retrieve inventories by product.
       parameters:
-        - name: customerId
+        - name: id
           in: path
           required: true
-          description: Customer id of account you would like to retrieve.
+          description: Product id of inventories you would like to retrieve.
           schema:
             type: string
       responses:
         '200':
-          description: LevelUpViewModel object matching given customerId.
+          description: List of inventories matching given productId.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LevelUpViewModel'
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryViewModel'
     delete:
-      summary: Deletes an account based on the customerId
+      summary: Deletes all inventories with matching productId
       parameters:
-        - name: customerId
+        - name: id
           in: path
           required: true
-          description: Id of the customer for the account you would like to delete.
+          description: Id of the product for the inventories you would like to delete.
           schema:
             type: integer
       responses:
         '200':
-          description: Account successfully deleted.
+          description: Inventories successfully deleted.
 
 components:
   schemas:
-    LevelUpViewModel:
+    InventoryViewModel:
       type: object
       properties:
-        levelUpId:
+        inventoryId:
           type: integer
-        customerId:
+        productId:
           type: integer
-        points:
+        quantity:
           type: integer
-        memberDate:
-          type: string
-          format: date
       required:
-        - customerId
-        - points
-        - memberDate
+        - productId
+        - quantity
