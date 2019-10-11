@@ -21,7 +21,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductViewModel createCustomer(@RequestBody @Valid Product product){
+    public ProductViewModel createProduct(@RequestBody @Valid Product product){
         return service.saveProduct(product);
     }
 
@@ -36,7 +36,8 @@ public class ProductController {
     public ProductViewModel getProduct(@PathVariable("id") int id){
         ProductViewModel productVM = service.findProductById(id);
         if(productVM == null){
-            throw new NotFoundException("Product with id  " + id + " not found");
+            return null;
+            //throw new NotFoundException("Product with id  " + id + " not found");
         }
         return productVM;
     }
