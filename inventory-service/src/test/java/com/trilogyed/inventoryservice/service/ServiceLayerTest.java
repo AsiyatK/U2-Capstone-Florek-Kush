@@ -3,7 +3,9 @@ package com.trilogyed.inventoryservice.service;
 
 import com.trilogyed.inventoryservice.dao.InventoryDao;
 import com.trilogyed.inventoryservice.dao.InventoryDaoJdbcTemplateImpl;
+import com.trilogyed.inventoryservice.exceptions.InventoryNotFoundException;
 import com.trilogyed.inventoryservice.models.Inventory;
+import com.trilogyed.inventoryservice.viewmodels.InventoryViewModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,95 +35,97 @@ public class ServiceLayerTest {
     @Test
     public void createGetInventoryGetInventoryByProduct(){
 
-        LevelUpViewModel accountToAdd = new LevelUpViewModel();
-        accountToAdd.setCustomerId(732);
-        accountToAdd.setPoints(5000);
-        accountToAdd.setMemberDate(LocalDate.of(2010, 8, 2));
+        InventoryViewModel inventoryToAdd = new InventoryViewModel();
+        inventoryToAdd.setProductId(732);
+        inventoryToAdd.setQuantity(82);
 
-        accountToAdd = sl.createAccount(accountToAdd);
+        inventoryToAdd = sl.createInventory(inventoryToAdd);
 
-        LevelUpViewModel accountCreated = sl.getAccount(accountToAdd.getLevelUpId());
+        InventoryViewModel inventoryCreated = sl.getInventory(inventoryToAdd.getInventoryId());
 
-        assertEquals(accountToAdd, accountCreated);
+        assertEquals(inventoryToAdd, inventoryCreated);
 
-        LevelUpViewModel accountByCustomer = sl.getAccountByCustomer(accountToAdd.getCustomerId());
+        List<InventoryViewModel> inventoryList = new ArrayList<>();
+        inventoryList.add(inventoryToAdd);
 
-        assertEquals(accountToAdd, accountByCustomer);
+        List<InventoryViewModel> inventoryByProduct = sl.getInventoriesByProduct(inventoryToAdd.getProductId());
+
+        assertEquals(inventoryList, inventoryByProduct);
+        assertEquals(1, inventoryByProduct.size());
     }
 
     @Test
     public void getAllInventories(){
-        List<LevelUpViewModel> allAccounts = new ArrayList<>();
+        List<InventoryViewModel> allInventories = new ArrayList<>();
 
-        LevelUpViewModel account1 = new LevelUpViewModel();
-        account1.setLevelUpId(732);
-        account1.setCustomerId(732);
-        account1.setPoints(5000);
-        account1.setMemberDate(LocalDate.of(2010, 8, 2));
+        InventoryViewModel inventory = new InventoryViewModel();
+        inventory.setInventoryId(732);
+        inventory.setProductId(732);
+        inventory.setQuantity(82);
 
-        LevelUpViewModel account2 = new LevelUpViewModel();
-        account2.setLevelUpId(908);
-        account2.setCustomerId(908);
-        account2.setPoints(2000);
-        account2.setMemberDate(LocalDate.of(2012, 7, 19));
+        allInventories.add(inventory);
 
-        LevelUpViewModel account3 = new LevelUpViewModel();
-        account3.setLevelUpId(973);
-        account3.setCustomerId(973);
-        account3.setPoints(3000);
-        account3.setMemberDate(LocalDate.of(2019, 6, 25));
+        inventory = new InventoryViewModel();
+        inventory.setInventoryId(908);
+        inventory.setProductId(908);
+        inventory.setQuantity(87);
 
-        allAccounts.add(account1);
-        allAccounts.add(account2);
-        allAccounts.add(account3);
+        allInventories.add(inventory);
 
-        List<LevelUpViewModel> accountsFromService = sl.getAllAccounts();
+        inventory = new InventoryViewModel();
+        inventory.setInventoryId(973);
+        inventory.setProductId(973);
+        inventory.setQuantity(37);
 
-        assertEquals(accountsFromService.size(), allAccounts.size());
+        allInventories.add(inventory);
 
-        assertEquals(allAccounts, accountsFromService);
+        List<InventoryViewModel> inventoriesFromService = sl.getAllInventories();
+
+        assertEquals(allInventories.size(), inventoriesFromService.size());
+
+        assertEquals(allInventories, inventoriesFromService);
     }
 
     @Test
     public void updateInventory(){
-        LevelUpViewModel accountUpdate = new LevelUpViewModel();
-        accountUpdate.setLevelUpId(908);
-        accountUpdate.setCustomerId(908);
-        accountUpdate.setPoints(1000);
-        accountUpdate.setMemberDate(LocalDate.of(2012, 7, 19));
+        InventoryViewModel inventoryUpdate = new InventoryViewModel();
+        inventoryUpdate.setInventoryId(908);
+        inventoryUpdate.setProductId(908);
+        inventoryUpdate.setQuantity(1);
 
-        accountUpdate.setPoints(2000);
+        inventoryUpdate.setQuantity(87);
 
-        sl.updateAccount(accountUpdate);
+        sl.updateInventory(inventoryUpdate);
 
-        LevelUpViewModel accountFromService = sl.getAccount(accountUpdate.getLevelUpId());
+        InventoryViewModel inventoryFromService = sl.getInventory(inventoryUpdate.getInventoryId());
 
-        assertEquals(accountUpdate, accountFromService);
+        assertEquals(inventoryUpdate, inventoryFromService);
 
     }
 
-    @Test(expected = MembershipNotFoundException.class)
+    @Test(expected = InventoryNotFoundException.class)
     public void deleteInventory(){
-        LevelUpViewModel accountDelete = new LevelUpViewModel();
-        accountDelete.setLevelUpId(973);
+        InventoryViewModel inventoryDelete = new InventoryViewModel();
+        inventoryDelete.setInventoryId(973);
 
-        sl.deleteAccount(accountDelete.getLevelUpId());
+        sl.deleteInventory(inventoryDelete.getInventoryId());
 
-        accountDelete = sl.getAccount(accountDelete.getLevelUpId());
+        inventoryDelete = sl.getInventory(inventoryDelete.getInventoryId());
 
-        fail("Should throw an error because account does not exist");
+        fail("Should throw an error because inventory does not exist");
     }
 
-    @Test(expected = MembershipNotFoundException.class)
+    @Test
     public void deleteInventoryByProduct(){
-        LevelUpViewModel accountDelete = new LevelUpViewModel();
-        accountDelete.setLevelUpId(973);
+        InventoryViewModel inventoryDelete = new InventoryViewModel();
+        inventoryDelete.setProductId(973);
 
-        sl.deleteAccount(accountDelete.getLevelUpId());
+        sl.deleteInventoriesByProduct(inventoryDelete.getInventoryId());
 
-        accountDelete = sl.getAccount(accountDelete.getLevelUpId());
 
-        fail("Should throw an error because account does not exist");
+        List<InventoryViewModel> inventoriesByProduct = sl.getInventoriesByProduct(inventoryDelete.getProductId());
+
+        assertEquals(0, inventoriesByProduct.size());
     }
 
     private void setUpInventoryMock(){
@@ -132,7 +136,8 @@ public class ServiceLayerTest {
         inventoryAdded.setProductId(732);
         inventoryAdded.setQuantity(82);
 
-        Inventory inventoryNew = new Inventory();
+//Is this going to create issues when actually sending data to service layer?
+        InventoryViewModel inventoryNew = new InventoryViewModel();
         inventoryNew.setProductId(732);
         inventoryNew.setQuantity(82);
 
@@ -142,7 +147,7 @@ public class ServiceLayerTest {
         List<Inventory> inventoriesByProduct = new ArrayList<>();
         inventoriesByProduct.add(inventoryAdded);
 
-        doReturn(inventoryAdded).when(inventoryDao).getInventoriesByProduct(732);
+        doReturn(inventoriesByProduct).when(inventoryDao).getInventoriesByProduct(732);
 
         Inventory inventoryUpdated = new Inventory();
         inventoryUpdated.setInventoryId(908);
@@ -169,7 +174,9 @@ public class ServiceLayerTest {
         //mock response for deleting inventory
         doNothing().when(inventoryDao).deleteInventory(973);
         doReturn(null).when(inventoryDao).getInventory(973);
-        doReturn(null).when(inventoryDao).getInventoriesByProduct(973);
+
+        List<Inventory> emptyList = new ArrayList<>();
+        doReturn(emptyList).when(inventoryDao).getInventoriesByProduct(973);
 
 
     }

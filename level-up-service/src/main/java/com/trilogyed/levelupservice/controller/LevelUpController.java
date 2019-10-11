@@ -59,7 +59,7 @@ public class LevelUpController {
 
     @DeleteMapping(value = "/customer/{customerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteByPost(@PathVariable("customerId") int customerId){
+    public void deleteByCustomer(@PathVariable("customerId") int customerId){
         sl.deleteAccountByCustomer(customerId);
     }
 
