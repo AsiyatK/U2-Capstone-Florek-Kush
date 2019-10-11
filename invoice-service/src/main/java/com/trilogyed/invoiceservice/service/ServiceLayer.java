@@ -53,8 +53,7 @@ public class ServiceLayer {
             }
         }
     }
-    //*************************TO DO*************************\\
-    //Should make only two calls (one to Invoice table and one to Item table, then use filtered list to get InvoiceItems
+
     public List<InvoiceViewModel> getAllInvoices(){
 
         List<Invoice> invoiceList = invoiceDao.getAllInvoices();

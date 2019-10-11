@@ -104,11 +104,8 @@ public class RetailApiController {
     @ResponseStatus(value = HttpStatus.OK)
     public LevelUpViewModel viewRewards(@PathVariable(name = "customerId") int customerId){
 
-        //sl.getRewardsData(customerId);
+        return sl.getRewardsData(customerId);
 
-        LevelUpViewModel rewards = new LevelUpViewModel();
-
-        return rewards;
     }
 
     //requests will be processed through rabbitMQ
