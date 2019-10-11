@@ -5,6 +5,7 @@ import com.trilogyed.invoiceservice.dao.InvoiceDao;
 import com.trilogyed.invoiceservice.dao.InvoiceDaoJdbcTemplateImpl;
 import com.trilogyed.invoiceservice.dao.InvoiceItemDao;
 import com.trilogyed.invoiceservice.dao.InvoiceItemDaoJdbcTemplateImpl;
+import com.trilogyed.invoiceservice.models.Invoice;
 import org.junit.Before;
 
 import static org.mockito.Mockito.mock;
@@ -31,18 +32,22 @@ public class ServiceLayerTest {
 
     }
 
-    public void updatedInvoice(){
+    public void updateInvoice(){
 
     }
 
-    public void addGetItemGetByInvoiceDelete(){
+    public void addGetDeleteItem(){
 
     }
 
-    public void
+    public void updateItem(){
+
+    }
 
     public void setUpInvoiceMock(){
         invoiceDao = mock(InvoiceDaoJdbcTemplateImpl.class);
+
+        Invoice invoiceAdded = new Invoice();
 
 
     }

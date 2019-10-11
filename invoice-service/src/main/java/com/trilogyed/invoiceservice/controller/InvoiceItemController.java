@@ -32,6 +32,7 @@ public class InvoiceItemController {
         return item;
     }
 
+    //ENDPOINTS NOT CURRENTLY ESTABLISHED, SEE SERVICE LAYER NOTES FOR THESE METHODS
 //    @GetMapping(value = "/invoice/{id}")
 //    @ResponseStatus(HttpStatus.OK)
 //    public List<InvoiceItemViewModel> getInvoiceItemsByInvoice(@PathVariable("id") int invoiceId) {

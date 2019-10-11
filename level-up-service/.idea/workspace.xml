@@ -5,6 +5,7 @@
       <change beforePath="$PROJECT_DIR$/../invoice-service/src/main/java/com/trilogyed/invoiceservice/controller/InvoiceItemController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../invoice-service/src/main/java/com/trilogyed/invoiceservice/controller/InvoiceItemController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../invoice-service/src/main/java/com/trilogyed/invoiceservice/service/ServiceLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../invoice-service/src/main/java/com/trilogyed/invoiceservice/service/ServiceLayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../invoice-service/src/test/java/com/trilogyed/invoiceservice/service/ServiceLayerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../invoice-service/src/test/java/com/trilogyed/invoiceservice/service/ServiceLayerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
