@@ -7,6 +7,7 @@ import com.trilogyed.retailapiservice.viewmodels.LevelUpViewModel;
 import com.trilogyed.retailapiservice.viewmodels.OrderViewModel;
 import com.trilogyed.retailapiservice.viewmodels.ProductViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RefreshScope
 @RequestMapping(value = "/retail")
 public class RetailApiController {
 
