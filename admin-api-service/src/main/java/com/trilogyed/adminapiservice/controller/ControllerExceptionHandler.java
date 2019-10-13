@@ -1,6 +1,8 @@
 package com.trilogyed.adminapiservice.controller;
 
 import com.trilogyed.adminapiservice.exception.NotFoundException;
+import feign.Feign;
+import feign.FeignException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.hateoas.VndErrors;
 import org.springframework.http.HttpStatus;
@@ -13,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.json.JSONObject;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 @RequestMapping(produces = "application/vnd.error+json")
@@ -74,6 +79,21 @@ public class ControllerExceptionHandler {
         VndErrors error = new VndErrors(request.toString(), "Not found : " + e.getMessage());
         ResponseEntity<VndErrors> responseEntity = new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         return responseEntity;
+    }
+
+
+
+//    @ExceptionHandler(FeignException.NotFound.class)
+    @ExceptionHandler({FeignException.class})
+    public Map<String, Object> handleFeignStatusException(FeignException e, HttpServletResponse response) {
+        response.setStatus(e.status());
+        return new JSONObject(e.contentUTF8()).toMap();
+    }
+
+    @ExceptionHandler(FeignException.UnprocessableEntity.class)
+    public Map<String, Object> handleFeignStatusExcept(FeignException e, HttpServletResponse response) {
+        response.setStatus(e.status());
+        return new JSONObject(e.contentUTF8()).toMap();
     }
 }
 

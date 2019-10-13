@@ -1,12 +1,15 @@
 package com.trilogyed.adminapiservice.service;
 
+import com.trilogyed.adminapiservice.exception.NotFoundException;
 import com.trilogyed.adminapiservice.model.Customer;
 import com.trilogyed.adminapiservice.model.Product;
 import com.trilogyed.adminapiservice.util.feign.CustomerClient;
 import com.trilogyed.adminapiservice.util.feign.LevelUpClient;
 import com.trilogyed.adminapiservice.util.feign.ProductClient;
 import com.trilogyed.adminapiservice.viewModel.CustomerViewModel;
+import com.trilogyed.adminapiservice.viewModel.LevelUpViewModel;
 import com.trilogyed.adminapiservice.viewModel.ProductViewModel;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,18 +84,6 @@ public class ServiceLayer {
     //CUSTORMER API
 
 
-        /*
-        private int customerId;
-    private String firstName;
-    private String lastName;
-    private String street;
-    private String city;
-    private String zip;
-    private String email;
-    private String phone;
-         */
-
-
     @Transactional
     public CustomerViewModel saveCustomer(CustomerViewModel customerVM){
 
@@ -111,13 +102,15 @@ public class ServiceLayer {
     }
 
     public CustomerViewModel findCustomer(int customerId){
-        CustomerViewModel customerVM = customerClient.getCustomer(customerId);
+        try {
+            return customerClient.getCustomer(customerId);
 
-        if(customerVM == null){
-            throw new IllegalArgumentException("Customer with the id " + customerId + " not found");
+        } catch(FeignException.NotFound e){
+            throw new NotFoundException("Customer with the id " + customerId + " not found" + e.getClass());
+
+        } catch(FeignException e){
+            throw new NotFoundException("!!!! " + e.getClass());
         }
-
-        return customerVM;
     }
 
     public List<CustomerViewModel> findAllCustomers(){
@@ -128,6 +121,7 @@ public class ServiceLayer {
     public void updateCustomer(CustomerViewModel customerVM){
 
         Customer customer = new Customer();
+        customer.setCustomerId(customerVM.getCustomerId());
         customer.setFirstName(customerVM.getFirstName());
         customer.setLastName(customerVM.getLastName());
         customer.setStreet(customerVM.getStreet());
@@ -142,7 +136,53 @@ public class ServiceLayer {
 
     @Transactional
     public void removeCustomer(int customerId){
+
         customerClient.deleteCustomer(customerId);
+    }
+
+
+    //LEVEL-UP API
+
+    public LevelUpViewModel saveAccount(LevelUpViewModel lvm){
+
+       lvm = levelUpClient.createAccount(lvm);
+
+        System.out.println("!!!!");
+
+       return lvm;
+    }
+
+    public LevelUpViewModel findAcount(int levelUpId){
+        LevelUpViewModel lvm = levelUpClient.getAccount(levelUpId);
+        if(lvm == null){
+            throw new NotFoundException("The account with id " + levelUpId + "could not be found");
+
+        }
+        return lvm;
+    }
+
+    public LevelUpViewModel findAccountByCustomer(int customerId){
+        LevelUpViewModel lvm = levelUpClient.getAccountByCustomer(customerId);
+        if(lvm == null){
+            throw new NotFoundException("The account with the customer id  " + customerId + " not found");
+        }
+        return lvm;
+    }
+
+    public List<LevelUpViewModel> findAllAccounts(){
+        return levelUpClient.getAllAccounts();
+    }
+
+    public void updateAccount(int levelUpId, LevelUpViewModel levelUpViewModel){
+        levelUpClient.updateAccount(levelUpId, levelUpViewModel);
+    }
+
+    public void deleteAccount(int levelUpId){
+        levelUpClient.deleteAccount(levelUpId);
+    }
+
+    public void deleteByCustomer(int customerId){
+        levelUpClient.getAccountByCustomer(customerId);
     }
 
 }
