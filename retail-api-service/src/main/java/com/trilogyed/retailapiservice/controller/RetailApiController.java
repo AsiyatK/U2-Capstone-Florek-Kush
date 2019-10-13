@@ -1,8 +1,7 @@
 package com.trilogyed.retailapiservice.controller;
 
-import com.trilogyed.retailapiservice.models.LevelUp;
 import com.trilogyed.retailapiservice.service.ServiceLayer;
-import com.trilogyed.retailapiservice.viewmodels.InvoiceViewModel;
+import com.trilogyed.retailapiservice.viewmodels.PurchaseViewModel;
 import com.trilogyed.retailapiservice.viewmodels.LevelUpViewModel;
 import com.trilogyed.retailapiservice.viewmodels.OrderViewModel;
 import com.trilogyed.retailapiservice.viewmodels.ProductViewModel;
@@ -16,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RefreshScope
-@RequestMapping(value = "/retail")
+@RequestMapping(value = "/retail", produces = "application/json")
 public class RetailApiController {
 
     @Autowired
@@ -26,75 +25,50 @@ public class RetailApiController {
     @ResponseStatus(value = HttpStatus.OK)
     public ProductViewModel viewProduct(@PathVariable(name = "productId") int productId){
 
-        //sl.getProductById(productId);
+        ProductViewModel product = sl.getProduct(productId);
 
-        ProductViewModel pvm = new ProductViewModel();
+        return product;
 
-        return pvm;
-    }
-
-    @GetMapping(value = "/products/inventory")
-    @ResponseStatus(value = HttpStatus.OK)
-    public List<ProductViewModel> browseProductsInStock(){
-
-        //sl.getProductsByInventory();
-
-        List<ProductViewModel> productList = new ArrayList<>();
-
-        return productList;
-    }
-
-    @GetMapping(value = "/products/invoice/{invoiceId}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public List<ProductViewModel> viewProductDetails(@PathVariable(name = "invoiceId") int invoiceId){
-
-        //sl.getProductsByInvoice(invoiceId);
-
-        List<ProductViewModel> productList = new ArrayList<>();
-
-        return productList;
     }
 
     @GetMapping(value = "/products")
     @ResponseStatus(value = HttpStatus.OK)
     public List<ProductViewModel> browseAllProducts(){
 
-        //sl.getAllProducts();
-
-        List<ProductViewModel> productList = new ArrayList<>();
+        List<ProductViewModel> productList = sl.getAllProducts();
 
         return productList;
     }
 
     @PostMapping(value = "/invoices")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public InvoiceViewModel placeOrder(@RequestBody OrderViewModel order){
+    public PurchaseViewModel placeOrder(@RequestBody OrderViewModel order){
 
         //sl.createInvoice(order);
 
-        InvoiceViewModel ivm = new InvoiceViewModel();
+        PurchaseViewModel ivm = new PurchaseViewModel();
 
         return ivm;
     }
 
     @GetMapping(value = "/invoices/{invoiceId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public InvoiceViewModel viewInvoice(@PathVariable(name = "invoiceId") int invoiceId){
+    public PurchaseViewModel viewInvoice(@PathVariable(name = "invoiceId") int invoiceId){
 
         //sl.getInvoiceById(customerId);
 
-        InvoiceViewModel invoice = new InvoiceViewModel();
+        PurchaseViewModel invoice = new PurchaseViewModel();
 
         return invoice;
     }
 
     @GetMapping(value = "/invoices/customer/{customerId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public List<InvoiceViewModel> viewPurchaseHistory(@PathVariable(name = "customerId") int customerId){
+    public List<PurchaseViewModel> viewPurchaseHistory(@PathVariable(name = "customerId") int customerId){
 
         //sl.getInvoicesByCustomer(customerId);
 
-        List<InvoiceViewModel> invoiceList = new ArrayList<>();
+        List<PurchaseViewModel> invoiceList = new ArrayList<>();
 
         return invoiceList;
     }
@@ -111,9 +85,9 @@ public class RetailApiController {
     //requests will be processed through rabbitMQ
     @PutMapping(value = "/level-up/{customerId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void addRewards(@PathVariable(name = "customerId") int customerId){
-
-        //sl.updateRewardsData(customerId);
+    public void addRewardsPoints(@PathVariable(name = "customerId") int customerId,
+                                 @RequestBody LevelUpViewModel update){
+        sl.updateRewardsPoints(customerId, update);
 
     }
 

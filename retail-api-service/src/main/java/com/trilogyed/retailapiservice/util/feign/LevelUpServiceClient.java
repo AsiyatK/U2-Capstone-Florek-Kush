@@ -15,10 +15,10 @@ public interface LevelUpServiceClient {
 
     @GetMapping(value = "/customer/{customerId}")
     @ResponseStatus(HttpStatus.OK)
-    public LevelUpViewModel getAccountByCustomer(@PathVariable("customerId") int customerId);
+    LevelUpViewModel getAccountByCustomer(@PathVariable("customerId") int customerId);
 
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateAccount(@PathVariable("id") int levelUpId, @RequestBody @Valid LevelUpViewModel account);
+    void updateAccount(@PathVariable("id") int levelUpId, @RequestBody @Valid LevelUpViewModel account);
 
 }

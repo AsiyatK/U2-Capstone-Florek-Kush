@@ -1,4 +1,4 @@
-package com.trilogyed.invoiceservice.models;
+package com.trilogyed.retailapiservice.viewmodels;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -6,7 +6,7 @@ import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class InvoiceItem {
+public class InvoiceItemViewModel {
 
     private int invoiceItemId;
     @NotNull(message = "invoiceId is a required field")
@@ -66,7 +66,7 @@ public class InvoiceItem {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InvoiceItem that = (InvoiceItem) o;
+        InvoiceItemViewModel that = (InvoiceItemViewModel) o;
         return getInvoiceItemId() == that.getInvoiceItemId() &&
                 getInvoiceId() == that.getInvoiceId() &&
                 getInventoryId() == that.getInventoryId() &&

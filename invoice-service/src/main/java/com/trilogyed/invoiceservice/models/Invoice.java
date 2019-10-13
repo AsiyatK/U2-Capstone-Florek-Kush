@@ -1,15 +1,14 @@
 package com.trilogyed.invoiceservice.models;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class Invoice {
 
     private int invoiceId;
-    @NotBlank(message = "customerId is a required field")
+    @NotNull(message = "customerId is a required field")
     private int customerId;
-    @NotBlank(message = "purchaseDate is a required field.")
     private LocalDate purchaseDate;
 
     public int getInvoiceId() {

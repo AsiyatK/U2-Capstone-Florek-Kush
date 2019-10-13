@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class ServiceLayer {
 
     /////////////INVOICE METHODS
     public InvoiceViewModel createInvoice(InvoiceViewModel newInvoice){
-
+        newInvoice.setPurchaseDate(LocalDate.now());
         Invoice invoiceCreated = invoiceDao.addInvoice(newInvoice);
 
         newInvoice.setInvoiceId(invoiceCreated.getInvoiceId());
@@ -142,7 +143,7 @@ public class ServiceLayer {
             }
         }
     }
-//************THE FOLLOWING TWO METHODS EXCLUDED AS STANDALONE METHODS*************\\
+//************THE FOLLOWING TWO METHODS EXCLUDED AS STAND-ALONE METHODS*************\\
     //*****THE CORRESPONDING DAO METHODS ARE UTILIZED IN GETALLINVOICES() AND GETINVOICE()*****\\
 //    public List<InvoiceItemViewModel> getAllInvoiceItems(){
 //        List<InvoiceItem> itemList = itemDao.getAllInvoiceItems();

@@ -3,33 +3,14 @@ package com.trilogyed.retailapiservice.viewmodels;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+import java.util.List;
 import java.util.Objects;
 
 public class OrderViewModel {
 
-    @NotBlank(message = "Order quantity cannot be blank")
-    @Positive(message = "Order quantity must be greater than zero")
-    private int orderQuantity;
-    @NotBlank(message = "Product id cannot be blank")
-    private int productId;
     @NotBlank(message = "Customer Id cannot be blank")
     private int customerId;
-
-    public int getOrderQuantity() {
-        return orderQuantity;
-    }
-
-    public void setOrderQuantity(int orderQuantity) {
-        this.orderQuantity = orderQuantity;
-    }
-
-    public int getProductId() {
-        return productId;
-    }
-
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
+    private List<ItemViewModel> orderList;
 
     public int getCustomerId() {
         return customerId;
@@ -39,20 +20,25 @@ public class OrderViewModel {
         this.customerId = customerId;
     }
 
+    public List<ItemViewModel> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<ItemViewModel> orderList) {
+        this.orderList = orderList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderViewModel that = (OrderViewModel) o;
-        return getOrderQuantity() == that.getOrderQuantity() &&
-                getProductId() == that.getProductId() &&
-                getCustomerId() == that.getCustomerId();
+        return getCustomerId() == that.getCustomerId() &&
+                Objects.equals(getOrderList(), that.getOrderList());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getOrderQuantity(), getProductId(), getCustomerId());
+        return Objects.hash(getCustomerId(), getOrderList());
     }
-
-
 }

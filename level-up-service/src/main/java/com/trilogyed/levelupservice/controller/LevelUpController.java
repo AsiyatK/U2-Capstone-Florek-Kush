@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RefreshScope
 @RequestMapping(value = "/level-up", produces = "application/json")
+@Valid
 public class LevelUpController {
 
     @Autowired
