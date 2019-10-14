@@ -1,4 +1,4 @@
-package com.trilogyed.retailapiservice.viewmodels;
+package com.trilogyed.retailapiservice.viewmodels.backing;
 
 import java.math.BigDecimal;
 import java.util.Objects;

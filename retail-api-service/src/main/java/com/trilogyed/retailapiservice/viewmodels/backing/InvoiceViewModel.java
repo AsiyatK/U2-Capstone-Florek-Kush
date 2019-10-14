@@ -1,4 +1,4 @@
-package com.trilogyed.retailapiservice.viewmodels;
+package com.trilogyed.retailapiservice.viewmodels.backing;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;

@@ -2,7 +2,6 @@ package com.trilogyed.retailapiservice.viewmodels;
 
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,7 +9,7 @@ public class OrderViewModel {
 
     @NotBlank(message = "Customer Id cannot be blank")
     private int customerId;
-    private List<ItemViewModel> orderList;
+    private List<OrderItem> orderList;
 
     public int getCustomerId() {
         return customerId;
@@ -20,11 +19,11 @@ public class OrderViewModel {
         this.customerId = customerId;
     }
 
-    public List<ItemViewModel> getOrderList() {
+    public List<OrderItem> getOrderList() {
         return orderList;
     }
 
-    public void setOrderList(List<ItemViewModel> orderList) {
+    public void setOrderList(List<OrderItem> orderList) {
         this.orderList = orderList;
     }
 
@@ -34,7 +33,7 @@ public class OrderViewModel {
         if (o == null || getClass() != o.getClass()) return false;
         OrderViewModel that = (OrderViewModel) o;
         return getCustomerId() == that.getCustomerId() &&
-                Objects.equals(getOrderList(), that.getOrderList());
+                getOrderList().equals(that.getOrderList());
     }
 
     @Override
