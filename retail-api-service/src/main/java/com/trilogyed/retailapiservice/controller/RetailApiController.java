@@ -2,9 +2,9 @@ package com.trilogyed.retailapiservice.controller;
 
 import com.trilogyed.retailapiservice.service.ServiceLayer;
 import com.trilogyed.retailapiservice.viewmodels.PurchaseViewModel;
-import com.trilogyed.retailapiservice.viewmodels.LevelUpViewModel;
+import com.trilogyed.retailapiservice.viewmodels.backing.LevelUpViewModel;
 import com.trilogyed.retailapiservice.viewmodels.OrderViewModel;
-import com.trilogyed.retailapiservice.viewmodels.ProductViewModel;
+import com.trilogyed.retailapiservice.viewmodels.backing.ProductViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.trilogyed.retailapiservice.util.feign;
 
-import com.trilogyed.retailapiservice.viewmodels.LevelUpViewModel;
+import com.trilogyed.retailapiservice.viewmodels.backing.LevelUpViewModel;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

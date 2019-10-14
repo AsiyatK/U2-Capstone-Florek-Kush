@@ -1,12 +1,15 @@
 package com.trilogyed.retailapiservice.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.trilogyed.retailapiservice.util.feign.InventoryServiceClient;
-import com.trilogyed.retailapiservice.util.feign.LevelUpServiceClient;
-import com.trilogyed.retailapiservice.util.feign.ProductServiceClient;
+import com.trilogyed.retailapiservice.util.feign.*;
 import com.trilogyed.retailapiservice.viewmodels.*;
+import com.trilogyed.retailapiservice.viewmodels.backing.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,14 +18,21 @@ public class ServiceLayer {
     LevelUpServiceClient levelUpClient;
     ProductServiceClient productClient;
     InventoryServiceClient inventoryClient;
+    CustomerServiceClient customerClient;
+    InvoiceServiceClient invoiceClient;
 
+    @Autowired
     public ServiceLayer(LevelUpServiceClient levelUpClient,
                         ProductServiceClient productClient,
-                        InventoryServiceClient inventoryClient)
+                        InventoryServiceClient inventoryClient,
+                        CustomerServiceClient customerClient,
+                        InvoiceServiceClient invoiceClient)
     {
         this.levelUpClient=levelUpClient;
         this.productClient=productClient;
         this.inventoryClient=inventoryClient;
+        this.customerClient=customerClient;
+        this.invoiceClient=invoiceClient;
     }
 
     public ProductViewModel getProduct(int productId){
@@ -56,8 +66,29 @@ public class ServiceLayer {
         return allProducts;
     }
 
-    //where the magic happens
+    //where the magic happens..hopefully
+    @Transactional
     public PurchaseViewModel generateInvoice(OrderViewModel order){
+        //verify customer exists
+        CustomerViewModel customer = new CustomerViewModel();
+        try{
+            customer = customerClient.getCustomer(order.getCustomerId());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Please confirm that the customerId provided is correct and try the request again.");
+        }
+        //set customer value
+        PurchaseViewModel purchase = new PurchaseViewModel();
+        purchase.setCustomer(customer);
+        //generate invoice
+        InvoiceViewModel invoice = new InvoiceViewModel();
+        invoice.setCustomerId(order.getCustomerId());
+        invoice = invoiceClient.createInvoice(invoice);
+        //set invoiceId value
+        purchase.setInvoiceId(invoice.getInvoiceId());
+        //update inventories and generate purchaseItems(products + invoiceItems)
+        purchase.setPurchaseDetails(verifyInStock(order.getOrderList(), invoice.getInvoiceId()));
+        //calculate and update level-up points earned
+        purchase.setPointsTotal(calculateLevelUp(purchase.getPurchaseDetails()));
 
         return null;
     }
@@ -80,6 +111,120 @@ public class ServiceLayer {
     private LevelUpViewModel defaultRewards(int customerId){
         LevelUpViewModel lvm = new LevelUpViewModel();
         return lvm;
+    }
+
+    private PurchaseViewModel buildPurchaseViewModel(PurchaseViewModel purchase){
+
+        return purchase;
+    }
+
+    private List<PurchaseItem> verifyInStock(List<OrderItem> productsToVerify, int invoiceId){
+
+        List<PurchaseItem> productsPurchased = new ArrayList<>();
+        //loop through order items
+        for (int i = 0; i < productsToVerify.size(); i++) {
+            OrderItem currentItem = productsToVerify.get(i);
+            //get all inventories for product
+            List<InventoryViewModel> productInventories =
+                    inventoryClient.getInventoriesByProduct(currentItem.getProductId());
+            //sum inventories per product
+            int totalInStock = productInventories.stream()
+                        .mapToInt(InventoryViewModel::getQuantity).sum();
+            //verify if quantity available can fulfill order request
+            if(totalInStock >= currentItem.getQuantity()){
+                int orderQuantityRemaining = currentItem.getQuantity();
+                //then sort inventories and adjust inventory/create line items per orderItem
+                List<InventoryViewModel> sortedInventories = new ArrayList<>();
+                productInventories.stream()
+                                .forEach(inventory -> {
+                            if(inventory.getQuantity() != 0
+                                    && inventory.getQuantity() > sortedInventories.get(0).getQuantity()){
+                                sortedInventories.add(0, inventory);
+                            } else if(inventory.getQuantity() != 0
+                                    && inventory.getQuantity() < sortedInventories.get(0).getQuantity()) {
+                                sortedInventories.add(inventory);
+                            }
+                        });
+                //fulfill order using largest inventories first...each inventory requires a unique line item
+                for (int j = 0; j < sortedInventories.size(); j++) {
+                    InventoryViewModel currentInventory = sortedInventories.get(j);
+
+                    //generate invoiceItem, set purchase props, and update inventory
+                    PurchaseItem purchaseItem = new PurchaseItem();
+
+                    ProductViewModel product = productClient.getProduct(currentItem.getProductId());
+                    //setting product details for PurchaseItem
+                    purchaseItem.setProductName(product.getProductName());
+                    purchaseItem.setProductDescription(product.getProductDescription());
+
+                    InvoiceItemViewModel invoiceItem = new InvoiceItemViewModel();
+
+                    //break loop for currentProduct if orderQuantity has been met
+                    if(orderQuantityRemaining == 0){
+                        //breaking loop for currentProduct
+                        j = sortedInventories.size();
+                    //determining if order quantity  can NOT be fulfilled with current Inventory
+                    //if true, fulfill partial order and adjust orderQuantityRemaining
+                    } else if(currentInventory.getQuantity() < orderQuantityRemaining){
+                        //setting line item props
+                        invoiceItem.setInvoiceId(invoiceId);
+                        invoiceItem.setInventoryId(currentInventory.getInventoryId());
+                        invoiceItem.setQuantity(currentInventory.getQuantity());
+
+                        orderQuantityRemaining -= currentInventory.getQuantity();
+
+                        currentInventory.setQuantity(0);
+
+                        invoiceItem.setUnitPrice(product.getListPrice());
+                        //creating invoiceItem
+                        invoiceItem = invoiceClient.createInvoiceItem(invoiceItem);
+                        //setting invoiceItem prop for purchaseItem
+                        purchaseItem.setInvoiceItem(invoiceItem);
+                        purchaseItem.setLineTotal(
+                                (invoiceItem.getUnitPrice()).multiply(new BigDecimal(invoiceItem.getQuantity()))
+                        );
+                        //updating inventory
+                        inventoryClient.updateInventory(currentInventory.getInventoryId(), currentInventory);
+                        //adding line item to list of purchased products
+                        productsPurchased.add(purchaseItem);
+                    } else {//if false, fulfill order and break loop
+                        //setting line item props
+                        invoiceItem.setInvoiceId(invoiceId);
+                        invoiceItem.setInventoryId(currentInventory.getInventoryId());
+                        invoiceItem.setQuantity(orderQuantityRemaining);
+
+                        currentInventory.setQuantity(currentInventory.getQuantity() - orderQuantityRemaining);
+
+                        invoiceItem.setUnitPrice(product.getListPrice());
+                        //creating invoiceItem
+                        invoiceItem = invoiceClient.createInvoiceItem(invoiceItem);
+                        //setting invoiceItem prop for purchaseItem
+                        purchaseItem.setInvoiceItem(invoiceItem);
+                        purchaseItem.setLineTotal(
+                                (invoiceItem.getUnitPrice()).multiply(new BigDecimal(invoiceItem.getQuantity()))
+                        );
+                        //updating inventory
+                        inventoryClient.updateInventory(currentInventory.getInventoryId(), currentInventory);
+                        //adding line item to list of purchased products
+                        productsPurchased.add(purchaseItem);
+
+                        //breaking loop for currentProduct
+                        j = sortedInventories.size();
+                    }
+
+                }
+            //if quantity available is not sufficient, throw exception
+            } else {
+                throw new IllegalArgumentException("quantity available is less than quantity ordered.");
+            }
+
+        }
+         return null;
+    }
+
+    private int calculateLevelUp(List<PurchaseItem> purchasesToCalculate){
+
+        return 0;
     }
 
 }
