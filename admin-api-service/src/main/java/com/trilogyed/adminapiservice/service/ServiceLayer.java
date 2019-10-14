@@ -2,11 +2,14 @@ package com.trilogyed.adminapiservice.service;
 
 import com.trilogyed.adminapiservice.exception.NotFoundException;
 import com.trilogyed.adminapiservice.model.Customer;
+import com.trilogyed.adminapiservice.model.Inventory;
 import com.trilogyed.adminapiservice.model.Product;
 import com.trilogyed.adminapiservice.util.feign.CustomerClient;
+import com.trilogyed.adminapiservice.util.feign.InventoryClient;
 import com.trilogyed.adminapiservice.util.feign.LevelUpClient;
 import com.trilogyed.adminapiservice.util.feign.ProductClient;
 import com.trilogyed.adminapiservice.viewModel.CustomerViewModel;
+import com.trilogyed.adminapiservice.viewModel.InventoryViewModel;
 import com.trilogyed.adminapiservice.viewModel.LevelUpViewModel;
 import com.trilogyed.adminapiservice.viewModel.ProductViewModel;
 import feign.FeignException;
@@ -21,14 +24,19 @@ public class ServiceLayer {
     private ProductClient productClient;
     private CustomerClient customerClient;
     private LevelUpClient levelUpClient;
+    private InventoryClient inventoryClient;
 
 
     @Autowired
-    public ServiceLayer(ProductClient productClient, CustomerClient customerClient, LevelUpClient levelUpClient) {
+    public ServiceLayer(ProductClient productClient, CustomerClient customerClient, LevelUpClient levelUpClient, InventoryClient inventoryClient) {
         this.productClient = productClient;
         this.customerClient = customerClient;
         this.levelUpClient = levelUpClient;
+        this.inventoryClient = inventoryClient;
     }
+
+
+
 
     //PRODUCT API
 
@@ -43,20 +51,19 @@ public class ServiceLayer {
 
         productVM = productClient.createProduct(product);
 
-        //productVM.setProductId(product.getProductId());
 
         return productVM;
     }
 
     public ProductViewModel findProduct(int productId){
 
-        ProductViewModel productVm = productClient.getProduct(productId);
-
-        if(productVm == null){
-            throw new IllegalArgumentException("Product with the id " + productId + " could not be found");
+        try {
+            return productClient.getProduct(productId);
+        } catch (FeignException.NotFound e) {
+            throw new NotFoundException("product with id " + productId + " not found " + e.getMessage());
+        } catch(FeignException e){
+            throw new NotFoundException("!!!! " + e.getClass());
         }
-
-        return productVm;
     }
 
     public List<ProductViewModel> findAllProducts(){
@@ -147,8 +154,6 @@ public class ServiceLayer {
 
        lvm = levelUpClient.createAccount(lvm);
 
-        System.out.println("!!!!");
-
        return lvm;
     }
 
@@ -183,6 +188,41 @@ public class ServiceLayer {
 
     public void deleteByCustomer(int customerId){
         levelUpClient.getAccountByCustomer(customerId);
+    }
+
+
+    //INVENTORY API
+
+    public InventoryViewModel saveInventory(InventoryViewModel ivm){
+        return inventoryClient.createInventory(ivm);
+    }
+
+    public InventoryViewModel findInventory(int inventoryId){
+        try{
+            return inventoryClient.getInventory(inventoryId);
+        } catch (FeignException.NotFound e){
+            throw new NotFoundException("Inventory with the id " + inventoryId + " not found" + e.status() + e.getMessage());
+        }
+    }
+
+    public List<InventoryViewModel> findAllInventories(){
+        return inventoryClient.getAllInventories();
+    }
+
+    public List<InventoryViewModel> findInventoriesByProduct(int productId){
+        return inventoryClient.getInventoriesByProduct(productId);
+    }
+
+    public void updateInventory(int inventoryId,  InventoryViewModel ivm){
+        inventoryClient.updateInventory(inventoryId, ivm);
+    }
+
+    public void removeInventory(int inventoryId){
+        inventoryClient.deleteInventory(inventoryId);
+    }
+
+    public void removeInventoryByProductId(int productId){
+        inventoryClient.getInventoriesByProduct(productId);
     }
 
 }
