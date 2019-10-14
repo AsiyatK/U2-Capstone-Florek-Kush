@@ -11,7 +11,7 @@ import java.util.List;
 @FeignClient(name = "inventory-service")
 public interface InventoryClient {
 
-    @RequestMapping(value = "/invetory", method = RequestMethod.POST)
+    @RequestMapping(value = "/inventory", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     InventoryViewModel createInventory(@RequestBody @Valid InventoryViewModel inventory);
 

@@ -1,15 +1,16 @@
 package com.trilogyed.inventoryservice.models;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Objects;
 
 public class Inventory {
 
     private int inventoryId;
-    @NotBlank(message = "productId is a required field")
+    @NotNull(message = "productId is a required field")
     private int productId;
-    @NotBlank(message = "quantity is a required field")
+    @NotNull(message = "quantity is a required field")
     @PositiveOrZero(message = "quantity must be zero or greater")
     private int quantity;
 
