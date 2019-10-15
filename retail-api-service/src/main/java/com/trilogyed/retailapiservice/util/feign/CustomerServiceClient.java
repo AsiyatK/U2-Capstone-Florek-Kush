@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Service
 @FeignClient(name = "customer-service")
-@RequestMapping(value="/customer", produces = "application/json")
+@RequestMapping(value="/customers", produces = "application/json")
 public interface CustomerServiceClient {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CustomerViewModel getCustomer(@PathVariable("id") int id);
+    CustomerViewModel getCustomer(@PathVariable("id") int id);
 
 }

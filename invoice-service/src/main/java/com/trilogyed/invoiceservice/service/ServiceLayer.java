@@ -125,7 +125,7 @@ public class ServiceLayer {
         InvoiceItem itemCreated = itemDao.addInvoiceItem(newItem);
 
         newItem.setInvoiceItemId(itemCreated.getInvoiceItemId());
-
+        System.out.println("InvoiceItem created");
         return newItem;
     }
 

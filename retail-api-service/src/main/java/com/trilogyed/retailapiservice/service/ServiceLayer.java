@@ -83,14 +83,15 @@ public class ServiceLayer {
         InvoiceViewModel invoice = new InvoiceViewModel();
         invoice.setCustomerId(order.getCustomerId());
         invoice = invoiceClient.createInvoice(invoice);
-        //set invoiceId value
+        //set invoiceId/date values
         purchase.setInvoiceId(invoice.getInvoiceId());
+        purchase.setPurchaseDate(invoice.getPurchaseDate());
         //update inventories and generate purchaseItems(products + invoiceItems)
         purchase.setPurchaseDetails(verifyInStock(order.getOrderList(), invoice.getInvoiceId()));
         //calculate and update level-up points earned
         purchase.setPointsTotal(calculateLevelUp(purchase.getPurchaseDetails()));
 
-        return null;
+        return purchase;
     }
 
     @HystrixCommand(fallbackMethod = "defaultRewards")
@@ -135,9 +136,12 @@ public class ServiceLayer {
                 int orderQuantityRemaining = currentItem.getQuantity();
                 //then sort inventories and adjust inventory/create line items per orderItem
                 List<InventoryViewModel> sortedInventories = new ArrayList<>();
+
                 productInventories.stream()
                                 .forEach(inventory -> {
-                            if(inventory.getQuantity() != 0
+                            if (sortedInventories.size() == 0){
+                                sortedInventories.add(0, inventory);
+                            } else if(inventory.getQuantity() != 0
                                     && inventory.getQuantity() > sortedInventories.get(0).getQuantity()){
                                 sortedInventories.add(0, inventory);
                             } else if(inventory.getQuantity() != 0
@@ -212,19 +216,27 @@ public class ServiceLayer {
                         j = sortedInventories.size();
                     }
 
-                }
+                }//end of loop to fulfill orders
+
             //if quantity available is not sufficient, throw exception
             } else {
                 throw new IllegalArgumentException("quantity available is less than quantity ordered.");
             }
+        }//end of loop through order items
 
-        }
-         return null;
+         return productsPurchased;
     }
 
     private int calculateLevelUp(List<PurchaseItem> purchasesToCalculate){
-
-        return 0;
+        BigDecimal totalSpent = new BigDecimal("0.00");
+        for (int i = 0; i < purchasesToCalculate.size(); i++) {
+            totalSpent = totalSpent.add(purchasesToCalculate.get(i).getLineTotal());
+        }
+        int points = ((totalSpent.divide(new BigDecimal("50.00")))
+                        .multiply(new BigDecimal("10.00")))
+                        .intValue();
+        //add messaging to levelUp queue consumer service
+        return points;
     }
 
 }

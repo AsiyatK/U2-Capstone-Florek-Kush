@@ -21,6 +21,7 @@ public class InvoiceItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public InvoiceItemViewModel createInvoiceItem(@RequestBody @Valid InvoiceItemViewModel item) {
+        System.out.println("invoiceItem has been received");
         return sl.createInvoiceItem(item);
     }
 

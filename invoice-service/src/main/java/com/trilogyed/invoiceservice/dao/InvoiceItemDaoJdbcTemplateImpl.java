@@ -61,7 +61,7 @@ public class InvoiceItemDaoJdbcTemplateImpl implements InvoiceItemDao {
         int id = jdbcTemplate.queryForObject("select LAST_INSERT_ID()", Integer.class);
 
         item.setInvoiceItemId(id);
-
+        System.out.println("invoiceItem is being mapped from db");
         return item;
 
     }

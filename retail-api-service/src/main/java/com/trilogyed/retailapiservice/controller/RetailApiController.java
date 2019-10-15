@@ -44,11 +44,7 @@ public class RetailApiController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public PurchaseViewModel placeOrder(@RequestBody OrderViewModel order){
 
-        //sl.createInvoice(order);
-
-        PurchaseViewModel ivm = new PurchaseViewModel();
-
-        return ivm;
+        return sl.generateInvoice(order);
     }
 
     @GetMapping(value = "/invoices/{invoiceId}")
