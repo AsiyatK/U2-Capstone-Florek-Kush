@@ -4,6 +4,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.trilogyed.retailapiservice.util.feign.*;
 import com.trilogyed.retailapiservice.viewmodels.*;
 import com.trilogyed.retailapiservice.viewmodels.backing.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,18 +22,25 @@ public class ServiceLayer {
     CustomerServiceClient customerClient;
     InvoiceServiceClient invoiceClient;
 
+    private RabbitTemplate rabbit;
+
+    public static final String EXCHANGE = "level-up-exchange";
+    public static final String ROUTING_KEY = "level-up.create.#";
+
     @Autowired
     public ServiceLayer(LevelUpServiceClient levelUpClient,
                         ProductServiceClient productClient,
                         InventoryServiceClient inventoryClient,
                         CustomerServiceClient customerClient,
-                        InvoiceServiceClient invoiceClient)
+                        InvoiceServiceClient invoiceClient,
+                        RabbitTemplate rabbit)
     {
         this.levelUpClient=levelUpClient;
         this.productClient=productClient;
         this.inventoryClient=inventoryClient;
         this.customerClient=customerClient;
         this.invoiceClient=invoiceClient;
+        this.rabbit=rabbit;
     }
 
     public ProductViewModel getProduct(int productId){
@@ -101,11 +109,6 @@ public class ServiceLayer {
 
         return account;
 
-    }
-
-    //This should be incorporated as part of the invoice creation method
-    public void updateRewardsPoints(int customerId, LevelUpViewModel update){
-        levelUpClient.updateAccount(customerId, update);
     }
 
     //circuit breaker fallback method
@@ -236,6 +239,8 @@ public class ServiceLayer {
                         .multiply(new BigDecimal("10.00")))
                         .intValue();
         //add messaging to levelUp queue consumer service
+        LevelUpViewModel accountUpdate = new LevelUpViewModel();
+
         return points;
     }
 

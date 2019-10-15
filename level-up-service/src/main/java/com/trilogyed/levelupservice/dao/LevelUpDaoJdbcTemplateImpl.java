@@ -28,7 +28,7 @@ public class LevelUpDaoJdbcTemplateImpl implements LevelUpDao {
     private final static String SELECT_ALL_ACCOUNTS =
             "select * from level_up";
     private final static String UPDATE_ACCOUNT =
-            "update level_up set customer_id=?, points=?, member_date=? where level_up_id = ?";
+            "update level_up set points=? where customer_id = ?";
     private final static String DELETE_ACCOUNT =
             "delete from level_up where level_up_id=?";
     private final static String DELETE_ACCOUNT_BY_CUSTOMER =
@@ -90,10 +90,8 @@ public class LevelUpDaoJdbcTemplateImpl implements LevelUpDao {
     public void updateAccount(LevelUp updatedAccount) {
         jdbcTemplate.update(
                 UPDATE_ACCOUNT,
-                updatedAccount.getCustomerId(),
                 updatedAccount.getPoints(),
-                updatedAccount.getMemberDate(),
-                updatedAccount.getLevelUpId()
+                updatedAccount.getCustomerId()
         );
     }
 

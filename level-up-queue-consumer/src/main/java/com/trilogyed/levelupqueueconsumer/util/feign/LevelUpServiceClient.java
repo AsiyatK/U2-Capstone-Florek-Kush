@@ -1,6 +1,6 @@
-package com.trilogyed.retailapiservice.util.feign;
+package com.trilogyed.levelupqueueconsumer.util.feign;
 
-import com.trilogyed.retailapiservice.viewmodels.backing.LevelUpViewModel;
+import com.trilogyed.levelupqueueconsumer.viewmodels.LevelUpViewModel;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,8 @@ import javax.validation.Valid;
 @RequestMapping(value="/level-up", produces = "application/json")
 public interface LevelUpServiceClient {
 
-    @GetMapping(value = "/customer/{customerId}")
-    @ResponseStatus(HttpStatus.OK)
-    LevelUpViewModel getAccountByCustomer(@PathVariable("customerId") int customerId);
+    @PutMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void updateAccount(@PathVariable("id") int levelUpId, @RequestBody @Valid LevelUpViewModel account);
 
 }

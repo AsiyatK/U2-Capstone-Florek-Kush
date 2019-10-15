@@ -1,6 +1,6 @@
-package com.trilogyed.retailapiservice.viewmodels.backing;
+package com.trilogyed.levelupqueueconsumer.viewmodels;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -8,11 +8,12 @@ import java.util.Objects;
 public class LevelUpViewModel {
 
     private int levelUpId;
-    @NotBlank(message = "customerId is a required field")
+    @NotNull(message = "customerId is a required field")
     private int customerId;
-    @NotBlank(message = "points is a required field")
+    @NotNull(message = "points is a required field")
     @PositiveOrZero(message = "points total must be zero or greater")
     private int points;
+    @NotNull(message = "memberDate is a required field")
     private LocalDate memberDate;
 
     public int getLevelUpId() {
@@ -61,15 +62,5 @@ public class LevelUpViewModel {
     @Override
     public int hashCode() {
         return Objects.hash(getLevelUpId(), getCustomerId(), getPoints(), getMemberDate());
-    }
-
-    @Override
-    public String toString() {
-        return "LevelUpViewModel{" +
-                "levelUpId=" + levelUpId +
-                ", customerId=" + customerId +
-                ", points=" + points +
-                ", memberDate=" + memberDate +
-                '}';
     }
 }

@@ -5,6 +5,7 @@ import com.trilogyed.invoiceservice.dao.InvoiceDao;
 import com.trilogyed.invoiceservice.dao.InvoiceDaoJdbcTemplateImpl;
 import com.trilogyed.invoiceservice.dao.InvoiceItemDao;
 import com.trilogyed.invoiceservice.dao.InvoiceItemDaoJdbcTemplateImpl;
+import com.trilogyed.invoiceservice.exceptions.InvoiceNotFoundException;
 import com.trilogyed.invoiceservice.models.Invoice;
 import com.trilogyed.invoiceservice.models.InvoiceItem;
 import com.trilogyed.invoiceservice.viewmodels.InvoiceItemViewModel;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class ServiceLayerTest {
@@ -151,9 +153,16 @@ public class ServiceLayerTest {
 
     }
 
-    @Test
+    @Test(expected = InvoiceNotFoundException.class)
     public void deleteInvoice(){
+        InvoiceViewModel invoiceDelete = new InvoiceViewModel();
+        invoiceDelete.setInvoiceId(973);
 
+        sl.deleteInvoice(invoiceDelete.getInvoiceId());
+
+        invoiceDelete = sl.getInvoice(invoiceDelete.getInvoiceId());
+
+        fail("Should throw an error because invoice does not exist");
     }
 
     public void addItem(){
@@ -245,6 +254,7 @@ public class ServiceLayerTest {
         List<InvoiceItem> itemsByInvoice1 = new ArrayList<>();
         itemsByInvoice1.add(itemUpdated);
         doReturn(itemsByInvoice1).when(itemDao).getInvoiceItemsByInvoice(908);
+
 //        InvoiceItem itemDeleted = new InvoiceItem();
 //        itemDeleted.setInvoiceItemId(973);
 //        itemDeleted.setInvoiceId(973);

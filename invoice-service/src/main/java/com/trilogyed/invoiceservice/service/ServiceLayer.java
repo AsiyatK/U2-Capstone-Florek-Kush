@@ -79,17 +79,6 @@ public class ServiceLayer {
 
         return invoiceModels;
 
-//        List<Invoice> invoiceList = invoiceDao.getAllInvoices();
-//
-//        List<InvoiceViewModel> invoiceModels = new ArrayList<>();
-//
-//
-//        invoiceList.stream()
-//                .forEach(invoice -> {
-//                    InvoiceViewModel model = buildInvoiceViewModel(invoice);
-//                    invoiceModels.add(model);
-//                });
-
     }
 
     public List<InvoiceViewModel> getInvoicesByCustomer(int customerId){

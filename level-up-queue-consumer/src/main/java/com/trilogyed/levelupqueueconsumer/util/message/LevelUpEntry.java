@@ -1,19 +1,16 @@
-package com.trilogyed.retailapiservice.viewmodels.backing;
+package com.trilogyed.levelupqueueconsumer.util.message;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Objects;
 
-public class LevelUpViewModel {
+public class LevelUpEntry {
 
     private int levelUpId;
-    @NotBlank(message = "customerId is a required field")
     private int customerId;
-    @NotBlank(message = "points is a required field")
-    @PositiveOrZero(message = "points total must be zero or greater")
     private int points;
-    private LocalDate memberDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private String memberDate;
 
     public int getLevelUpId() {
         return levelUpId;
@@ -39,11 +36,11 @@ public class LevelUpViewModel {
         this.points = points;
     }
 
-    public LocalDate getMemberDate() {
+    public String getMemberDate() {
         return memberDate;
     }
 
-    public void setMemberDate(LocalDate memberDate) {
+    public void setMemberDate(String memberDate) {
         this.memberDate = memberDate;
     }
 
@@ -51,7 +48,7 @@ public class LevelUpViewModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LevelUpViewModel that = (LevelUpViewModel) o;
+        LevelUpEntry that = (LevelUpEntry) o;
         return getLevelUpId() == that.getLevelUpId() &&
                 getCustomerId() == that.getCustomerId() &&
                 getPoints() == that.getPoints() &&
@@ -65,11 +62,11 @@ public class LevelUpViewModel {
 
     @Override
     public String toString() {
-        return "LevelUpViewModel{" +
+        return "LevelUpEntry{" +
                 "levelUpId=" + levelUpId +
                 ", customerId=" + customerId +
                 ", points=" + points +
-                ", memberDate=" + memberDate +
+                ", memberDate='" + memberDate + '\'' +
                 '}';
     }
 }
