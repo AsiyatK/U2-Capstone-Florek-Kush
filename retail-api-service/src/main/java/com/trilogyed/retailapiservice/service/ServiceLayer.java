@@ -140,7 +140,7 @@ public class ServiceLayer {
         List<InvoiceItemViewModel> invoiceItems = invoice.getInvoiceItems();
 
         for (int i = 0; i < invoiceItems.size(); i++) {
-            
+
 
         }
 
