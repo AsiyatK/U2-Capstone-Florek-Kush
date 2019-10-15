@@ -2,6 +2,7 @@ package com.trilogyed.retailapiservice.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.trilogyed.retailapiservice.util.feign.*;
+import com.trilogyed.retailapiservice.util.message.LevelUpEntry;
 import com.trilogyed.retailapiservice.viewmodels.*;
 import com.trilogyed.retailapiservice.viewmodels.backing.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -97,9 +98,19 @@ public class ServiceLayer {
         //update inventories and generate purchaseItems(products + invoiceItems)
         purchase.setPurchaseDetails(verifyInStock(order.getOrderList(), invoice.getInvoiceId()));
         //calculate and update level-up points earned
-        purchase.setPointsTotal(calculateLevelUp(purchase.getPurchaseDetails()));
+        LevelUpEntry accountUpdate = calculateLevelUp(purchase.getPurchaseDetails());
+        accountUpdate.setCustomerId(order.getCustomerId());
+
+        System.out.println("Sending message...");
+        rabbit.convertAndSend(EXCHANGE, ROUTING_KEY, accountUpdate);
+        System.out.println("Message sent");
 
         return purchase;
+    }
+
+    public PurchaseViewModel getInvoice(int invoiceId){
+
+        return buildPurchaseViewModel(int invoiceId);
     }
 
     @HystrixCommand(fallbackMethod = "defaultRewards")
@@ -117,7 +128,22 @@ public class ServiceLayer {
         return lvm;
     }
 
-    private PurchaseViewModel buildPurchaseViewModel(PurchaseViewModel purchase){
+    private PurchaseViewModel buildPurchaseViewModel(int invoiceId){
+
+        InvoiceViewModel invoice = invoiceClient.getInvoice(invoiceId);
+
+        PurchaseViewModel purchase = new PurchaseViewModel();
+        purchase.setInvoiceId(invoiceId);
+        purchase.setPurchaseDate(invoice.getPurchaseDate());
+        purchase.setCustomer(customerClient.getCustomer(invoice.getCustomerId()));
+
+        List<InvoiceItemViewModel> invoiceItems = invoice.getInvoiceItems();
+
+        for (int i = 0; i < invoiceItems.size(); i++) {
+            
+
+        }
+
 
         return purchase;
     }
@@ -230,7 +256,7 @@ public class ServiceLayer {
          return productsPurchased;
     }
 
-    private int calculateLevelUp(List<PurchaseItem> purchasesToCalculate){
+    private LevelUpEntry calculateLevelUp(List<PurchaseItem> purchasesToCalculate){
         BigDecimal totalSpent = new BigDecimal("0.00");
         for (int i = 0; i < purchasesToCalculate.size(); i++) {
             totalSpent = totalSpent.add(purchasesToCalculate.get(i).getLineTotal());
@@ -239,9 +265,11 @@ public class ServiceLayer {
                         .multiply(new BigDecimal("10.00")))
                         .intValue();
         //add messaging to levelUp queue consumer service
-        LevelUpViewModel accountUpdate = new LevelUpViewModel();
+        LevelUpEntry accountUpdate = new LevelUpEntry();
 
-        return points;
+        accountUpdate.setPoints(points);
+
+        return accountUpdate;
     }
 
 }
