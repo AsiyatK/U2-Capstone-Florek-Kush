@@ -3,14 +3,8 @@ package com.trilogyed.adminapiservice.service;
 import com.trilogyed.adminapiservice.exception.NotFoundException;
 import com.trilogyed.adminapiservice.model.Customer;
 import com.trilogyed.adminapiservice.model.Product;
-import com.trilogyed.adminapiservice.util.feign.CustomerClient;
-import com.trilogyed.adminapiservice.util.feign.InventoryClient;
-import com.trilogyed.adminapiservice.util.feign.LevelUpClient;
-import com.trilogyed.adminapiservice.util.feign.ProductClient;
-import com.trilogyed.adminapiservice.viewModel.CustomerViewModel;
-import com.trilogyed.adminapiservice.viewModel.InventoryViewModel;
-import com.trilogyed.adminapiservice.viewModel.LevelUpViewModel;
-import com.trilogyed.adminapiservice.viewModel.ProductViewModel;
+import com.trilogyed.adminapiservice.util.feign.*;
+import com.trilogyed.adminapiservice.viewModel.*;
 import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +25,7 @@ public class ServicelayerTest {
     CustomerClient customerClient;
     LevelUpClient levelUpClient;
     InventoryClient inventoryClient;
+    InvoiceClient invoiceClient;
 
 
     @Before
@@ -40,8 +35,9 @@ public class ServicelayerTest {
         setUpCustomerClientMock();
         setUpLevelUpClientMock();
         setUpInventoryClientMock();
+        setUpInvoiceClientMock();
 
-        service = new ServiceLayer(productClient, customerClient, levelUpClient, inventoryClient);
+        service = new ServiceLayer(productClient, customerClient, levelUpClient, inventoryClient, invoiceClient);
 
     }
 
@@ -348,6 +344,126 @@ public class ServicelayerTest {
     }
 
 
+    @Test
+    public void addGetInvoiceGetByCustomerAddGetItemGetByInvoice(){
+        //Assemble
+        InvoiceViewModel invoice = new InvoiceViewModel();
+        invoice.setCustomerId(732);
+        invoice.setPurchaseDate(LocalDate.of(2019, 8, 2));
+        //Act
+        invoice = service.saveInvoice(invoice);
+        //Assemble
+        InvoiceItemViewModel item = new InvoiceItemViewModel();
+        item.setInvoiceId(invoice.getInvoiceId());
+        item.setInventoryId(732);
+        item.setQuantity(82);
+        item.setUnitPrice(new BigDecimal("19.99"));
+        //Act
+        item = service.saveInvoiceItem(item);
+        //Assemble
+        List<InvoiceItemViewModel> itemList = new ArrayList<>();
+        itemList.add(item);
+        invoice.setInvoiceItems(itemList);
+        //Act
+        InvoiceViewModel invoiceFromService = service.findInvoice(invoice.getInvoiceId());
+        //Assert
+        assertEquals(invoice, invoiceFromService);
+
+        //Assemble
+        List<InvoiceViewModel> invoices = new ArrayList<>();
+        invoices.add(invoice);
+        //Act
+        List<InvoiceViewModel> invoicesByCustomer = service.findInvoicesByCustomer(invoice.getCustomerId());
+        //Assert
+        assertEquals(invoices, invoicesByCustomer);
+        assertEquals(1, invoicesByCustomer.size());
+
+    }
+
+    @Test
+    public void getAllInvoices(){
+        //Assemble first Invoice with associated item
+        InvoiceViewModel invoice = new InvoiceViewModel();
+        invoice.setInvoiceId(732);
+        invoice.setCustomerId(732);
+        invoice.setPurchaseDate(LocalDate.of(2019, 8, 2));
+
+        //Assemble
+        InvoiceItemViewModel item = new InvoiceItemViewModel();
+        item.setInvoiceItemId(732);
+        item.setInvoiceId(invoice.getInvoiceId());
+        item.setInventoryId(732);
+        item.setQuantity(82);
+        item.setUnitPrice(new BigDecimal("19.99"));
+
+        //Assemble
+        List<InvoiceItemViewModel> itemList = new ArrayList<>();
+        itemList.add(item);
+        invoice.setInvoiceItems(itemList);
+        //Assemble
+        List<InvoiceViewModel> invoices = new ArrayList<>();
+        invoices.add(invoice);
+
+        //Assemble second Invoice with associated item
+        invoice = new InvoiceViewModel();
+        invoice.setInvoiceId(908);
+        invoice.setCustomerId(908);
+        invoice.setPurchaseDate(LocalDate.of(2019, 7, 19));
+
+        //Assemble
+        item = new InvoiceItemViewModel();
+        item.setInvoiceItemId(908);
+        item.setInvoiceId(invoice.getInvoiceId());
+        item.setInventoryId(908);
+        item.setQuantity(87);
+        item.setUnitPrice(new BigDecimal("14.99"));
+
+        //Assemble
+        itemList = new ArrayList<>();
+        itemList.add(item);
+        invoice.setInvoiceItems(itemList);
+        //Assemble
+        invoices.add(invoice);
+
+        //Act
+        List<InvoiceViewModel> invoicesFromService = service.findAllInvoices();
+
+        //Assert
+       // assertEquals(invoices, invoicesFromService);
+        assertEquals(2, invoicesFromService.size());
+    }
+
+
+    @Test
+    public void updateInvoice(){
+        InvoiceViewModel invoiceUpdated = new InvoiceViewModel();
+        invoiceUpdated.setInvoiceId(908);
+        invoiceUpdated.setCustomerId(98);
+        invoiceUpdated.setPurchaseDate(LocalDate.of(2019, 7, 19));
+
+        InvoiceItemViewModel itemUpdated = new InvoiceItemViewModel();
+        itemUpdated.setInvoiceItemId(908);
+        itemUpdated.setInvoiceId(908);
+        itemUpdated.setInventoryId(908);
+        itemUpdated.setQuantity(87);
+        itemUpdated.setUnitPrice(new BigDecimal("14.99"));
+
+        List<InvoiceItemViewModel> itemList = new ArrayList<>();
+        itemList.add(itemUpdated);
+        invoiceUpdated.setInvoiceItems(itemList);
+
+        invoiceUpdated.setCustomerId(908);
+
+        service.updateInvoice(908, invoiceUpdated);
+
+        InvoiceViewModel invoiceFromService = service.findInvoice(908);
+
+        assertEquals(invoiceUpdated, invoiceFromService);
+
+    }
+
+
+
     public void setUpProductClientMock(){
         productClient = mock(ProductClient.class);
 
@@ -576,6 +692,104 @@ public class ServicelayerTest {
         List<InventoryViewModel> emptyList = new ArrayList<>();
         doReturn(emptyList).when(inventoryClient).getInventoriesByProduct(973);
 
+    }
+
+    public void setUpInvoiceClientMock(){
+        invoiceClient = mock(InvoiceClient.class);
+
+
+        InvoiceViewModel invoiceAdded = new InvoiceViewModel();
+        invoiceAdded.setInvoiceId(732);
+        invoiceAdded.setCustomerId(732);
+        invoiceAdded.setPurchaseDate(LocalDate.of(2019, 8, 2));
+
+        InvoiceViewModel invoiceNew = new InvoiceViewModel();
+        invoiceNew.setCustomerId(732);
+        invoiceNew.setPurchaseDate(LocalDate.of(2019, 8, 2));
+
+        doReturn(invoiceAdded).when(invoiceClient).createInvoice(invoiceNew);
+        doReturn(invoiceAdded).when(invoiceClient).getInvoice(732);
+
+        List<InvoiceViewModel> invoicesByCustomer = new ArrayList<>();
+        invoicesByCustomer.add(invoiceAdded);
+
+        doReturn(invoicesByCustomer).when(invoiceClient).getInvoicesByCustomer(732);
+
+        InvoiceViewModel invoiceUpdated = new InvoiceViewModel();
+        invoiceUpdated.setInvoiceId(908);
+        invoiceUpdated.setCustomerId(908);
+        invoiceUpdated.setPurchaseDate(LocalDate.of(2019, 7, 19));
+
+
+        InvoiceItemViewModel itemUpdated = new InvoiceItemViewModel();
+        itemUpdated.setInvoiceItemId(908);
+        itemUpdated.setInvoiceId(908);
+        itemUpdated.setInventoryId(908);
+        itemUpdated.setQuantity(87);
+        itemUpdated.setUnitPrice(new BigDecimal("14.99"));
+
+        doNothing().when(invoiceClient).updateInvoiceItem(908, itemUpdated);
+        doReturn(itemUpdated).when(invoiceClient).getInvoiceItem(908);
+
+        List<InvoiceItemViewModel> itemsByInvoice1 = new ArrayList<>();
+        itemsByInvoice1.add(itemUpdated);
+
+
+        invoiceUpdated.setInvoiceItems(itemsByInvoice1);
+
+        doNothing().when(invoiceClient).updateInvoice(908, invoiceUpdated);
+        doReturn(invoiceUpdated).when(invoiceClient).getInvoice(908);
+
+        InvoiceViewModel invoiceDeleted = new InvoiceViewModel();
+        invoiceDeleted.setInvoiceId(973);
+        invoiceDeleted.setCustomerId(973);
+        invoiceDeleted.setPurchaseDate(LocalDate.of(2019, 6, 25));
+
+        doNothing().when(invoiceClient).deleteInvoice(973);
+        doReturn(null).when(invoiceClient).getInvoice(973);
+        List<InvoiceViewModel> emptyList = new ArrayList<>();
+        doReturn(emptyList).when(invoiceClient).getInvoicesByCustomer(973);
+
+        List<InvoiceViewModel> allInvoices = new ArrayList<>();
+        allInvoices.add(invoiceAdded);
+        allInvoices.add(invoiceUpdated);
+        doReturn(allInvoices).when(invoiceClient).getAllInvoices();
+
+
+        //Invoice Items
+        InvoiceItemViewModel itemAdded = new InvoiceItemViewModel();
+        itemAdded.setInvoiceItemId(732);
+        itemAdded.setInvoiceId(732);
+        itemAdded.setInventoryId(732);
+        itemAdded.setQuantity(82);
+        itemAdded.setUnitPrice(new BigDecimal("19.99"));
+
+        InvoiceItemViewModel itemNew = new InvoiceItemViewModel();
+        itemNew.setInvoiceId(732);
+        itemNew.setInventoryId(732);
+        itemNew.setQuantity(82);
+        itemNew.setUnitPrice(new BigDecimal("19.99"));
+
+        doReturn(itemAdded).when(invoiceClient).createInvoiceItem(itemNew);
+        doReturn(itemAdded).when(invoiceClient).getInvoiceItem(732);
+
+//        List<InvoiceItemViewModel> itemsByInvoice = new ArrayList<>();
+//        itemsByInvoice.add(itemAdded);
+//        doReturn(itemsByInvoice).when(invoiceClient).getInvoiceItemsByInvoice(732);
+
+
+        //doReturn(itemsByInvoice1).when(invoiceClient).getInvoiceItemsByInvoice(908);
+
+
+        doNothing().when(invoiceClient).deleteInvoiceItem(973);
+        doReturn(null).when(invoiceClient).getInvoiceItem(973);
+//        List<InvoiceItemViewModel> emptyItemList = new ArrayList<>();
+//        doReturn(emptyItemList).when(invoiceClient).getInvoiceItemsByInvoice(973);
+
+//        List<InvoiceItemViewModel> allItems = new ArrayList<>();
+//        allItems.add(itemAdded);
+//        allItems.add(itemUpdated);
+//        doReturn(allItems).when(invoiceClient).getAllInvoiceItems();
     }
 
 }

@@ -122,6 +122,7 @@ public class ServiceLayer {
     }
 
     public InvoiceItemViewModel createInvoiceItem(InvoiceItemViewModel newItem){
+
         InvoiceItem itemCreated = itemDao.addInvoiceItem(newItem);
 
         newItem.setInvoiceItemId(itemCreated.getInvoiceItemId());

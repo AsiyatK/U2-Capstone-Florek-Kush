@@ -39,13 +39,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.httpBasic();
 
         httpSecurity.authorizeRequests()
-                /*
-                .mvcMatchers(HttpMethod.PUT, "/console/*", "/game/*", "/tshirt/*").hasAnyAuthority("STAFF_MEMBER", "MANAGER", "ADMIN")
-                .mvcMatchers(HttpMethod.POST, "/console", "/game", "tshirt").hasAnyAuthority("MANAGER", "ADMIN")
-                .mvcMatchers(HttpMethod.DELETE, "/console/*", "/game/*", "/tshirt/*").hasAuthority("ADMIN")
-                .mvcMatchers(HttpMethod.GET, "/purchase/*").hasAnyAuthority("USER","STAFF_MEMBER", "MANAGER", "ADMIN")
-                 */
-                .anyRequest().permitAll();
+
+                .mvcMatchers(HttpMethod.PUT, "/customers/*", "/inventory/*", "/invoices/*", "/level-up/*", "products/*").hasAnyAuthority( "TEAM_LEAD", "MANAGER", "ADMIN")
+                .mvcMatchers(HttpMethod.POST, "/customers/*", "/inventory/*", "/invoices/*", "/level-up/*", "products/*").hasAnyAuthority("MANAGER", "ADMIN")
+                .mvcMatchers(HttpMethod.DELETE, "/customers/*", "/inventory/*", "/invoices/*", "/level-up/*", "products/*").hasAuthority("ADMIN")
+                .mvcMatchers(HttpMethod.GET, "/customers/*", "/inventory/*", "/invoices/*", "/level-up/*", "products/*").hasAnyAuthority( "TEAM_LEAD", "MANAGER", "ADMIN", "EMPLOYEE")
+                .mvcMatchers(HttpMethod.POST, "/customers").hasAuthority("TEAM_LEAD");
+
+//                .anyRequest().permitAll();
 
 
 
@@ -60,8 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true);
 
         httpSecurity
-                .csrf().disable();
-                //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                .csrf()/*.disable();*/
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     }
 
 

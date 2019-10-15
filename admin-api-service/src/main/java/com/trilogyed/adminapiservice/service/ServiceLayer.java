@@ -1,17 +1,9 @@
 package com.trilogyed.adminapiservice.service;
 
 import com.trilogyed.adminapiservice.exception.NotFoundException;
-import com.trilogyed.adminapiservice.model.Customer;
-import com.trilogyed.adminapiservice.model.Inventory;
-import com.trilogyed.adminapiservice.model.Product;
-import com.trilogyed.adminapiservice.util.feign.CustomerClient;
-import com.trilogyed.adminapiservice.util.feign.InventoryClient;
-import com.trilogyed.adminapiservice.util.feign.LevelUpClient;
-import com.trilogyed.adminapiservice.util.feign.ProductClient;
-import com.trilogyed.adminapiservice.viewModel.CustomerViewModel;
-import com.trilogyed.adminapiservice.viewModel.InventoryViewModel;
-import com.trilogyed.adminapiservice.viewModel.LevelUpViewModel;
-import com.trilogyed.adminapiservice.viewModel.ProductViewModel;
+import com.trilogyed.adminapiservice.model.*;
+import com.trilogyed.adminapiservice.util.feign.*;
+import com.trilogyed.adminapiservice.viewModel.*;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,16 +17,17 @@ public class ServiceLayer {
     private CustomerClient customerClient;
     private LevelUpClient levelUpClient;
     private InventoryClient inventoryClient;
+    private InvoiceClient invoiceClient;
 
 
     @Autowired
-    public ServiceLayer(ProductClient productClient, CustomerClient customerClient, LevelUpClient levelUpClient, InventoryClient inventoryClient) {
+    public ServiceLayer(ProductClient productClient, CustomerClient customerClient, LevelUpClient levelUpClient, InventoryClient inventoryClient, InvoiceClient invoiceClient) {
         this.productClient = productClient;
         this.customerClient = customerClient;
         this.levelUpClient = levelUpClient;
         this.inventoryClient = inventoryClient;
+        this.invoiceClient = invoiceClient;
     }
-
 
 
 
@@ -225,6 +218,58 @@ public class ServiceLayer {
         inventoryClient.getInventoriesByProduct(productId);
     }
 
+
+
+    public InvoiceViewModel saveInvoice(InvoiceViewModel invoiceVM){
+       return invoiceClient.createInvoice(invoiceVM);
+    }
+
+
+    public InvoiceViewModel findInvoice(int invoiceId){
+
+
+        try{
+            return invoiceClient.getInvoice(invoiceId);
+
+        } catch (FeignException.NotFound e){
+            throw  new NotFoundException("Invoice with id " + invoiceId + " not found");
+        }
+    }
+
+
+    public List<InvoiceViewModel> findAllInvoices(){
+        return invoiceClient.getAllInvoices();
+    }
+
+    public List<InvoiceViewModel> findInvoicesByCustomer(int customerId){
+        return invoiceClient.getInvoicesByCustomer(customerId);
+    }
+
+    public void updateInvoice(int invoiceId, InvoiceViewModel invoiceVM){
+        invoiceClient.updateInvoice(invoiceId, invoiceVM);
+    }
+
+    public void removeInvoice(int invoiceId){
+        invoiceClient.deleteInvoice(invoiceId);
+    }
+
+
+    //INVOICE ITEM
+    public InvoiceItemViewModel saveInvoiceItem(InvoiceItemViewModel newItem){
+        return invoiceClient.createInvoiceItem(newItem);
+    }
+
+    public InvoiceItemViewModel findInvoiceItem(int itemId){
+        return invoiceClient.getInvoiceItem(itemId);
+    }
+
+    public void updateInvoiceItem(int itemId, InvoiceItemViewModel updatedItem){
+        invoiceClient.updateInvoiceItem(itemId, updatedItem);
+    }
+
+    public void deleteInvoiceItem(int itemId){
+        invoiceClient.deleteInvoiceItem(itemId);
+    }
 }
 
 
