@@ -2,6 +2,8 @@ package com.trilogyed.retailapiservice.viewmodels.backing;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class InvoiceViewModel {
@@ -10,6 +12,8 @@ public class InvoiceViewModel {
     @NotNull(message = "customerId is a required field")
     private int customerId;
     private LocalDate purchaseDate;
+
+    private List<InvoiceItemViewModel> invoiceItems = new ArrayList<>();
 
     public int getInvoiceId() {
         return invoiceId;
@@ -35,6 +39,14 @@ public class InvoiceViewModel {
         this.purchaseDate = purchaseDate;
     }
 
+    public List<InvoiceItemViewModel> getInvoiceItems() {
+        return invoiceItems;
+    }
+
+    public void setInvoiceItems(List<InvoiceItemViewModel> invoiceItems) {
+        this.invoiceItems = invoiceItems;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,11 +54,12 @@ public class InvoiceViewModel {
         InvoiceViewModel that = (InvoiceViewModel) o;
         return getInvoiceId() == that.getInvoiceId() &&
                 getCustomerId() == that.getCustomerId() &&
-                Objects.equals(getPurchaseDate(), that.getPurchaseDate());
+                Objects.equals(getPurchaseDate(), that.getPurchaseDate()) &&
+                Objects.equals(getInvoiceItems(), that.getInvoiceItems());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvoiceId(), getCustomerId(), getPurchaseDate());
+        return Objects.hash(getInvoiceId(), getCustomerId(), getPurchaseDate(), getInvoiceItems());
     }
 }

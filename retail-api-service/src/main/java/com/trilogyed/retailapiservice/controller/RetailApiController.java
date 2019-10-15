@@ -56,11 +56,7 @@ public class RetailApiController {
     @ResponseStatus(value = HttpStatus.OK)
     public PurchaseViewModel viewInvoice(@PathVariable(name = "invoiceId") int invoiceId){
 
-        //sl.getInvoiceById(customerId);
-
-        PurchaseViewModel invoice = new PurchaseViewModel();
-
-        return invoice;
+        return sl.getInvoice(invoiceId);
     }
 
     @GetMapping(value = "/invoices/customer/{customerId}")
